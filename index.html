@@ -91,9 +91,9 @@ h1{margin:0;font-size:38px;line-height:1.2;letter-spacing:-1px}
 <script>
 const SUPABASE_URL = "https://rwtbrjhgpufmkcdltjge.supabase.co";
 const SUPABASE_KEY = "sb_publishable_j7YAOitklhJeq79wu5N0sQ_xRuo_jfI";
-const LINE_URL = "https://line.me/ti/p/zbDgk5ZQ25";
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let memberLineUrl = "";
 const params = new URLSearchParams(window.location.search);
 
 const ref = cleanParam(params.get("ref"));
@@ -117,6 +117,7 @@ const source = from || utmSource || detectReferrer() || "direct";
 document.getElementById("refBox").textContent =
   ref ? `推薦碼：${ref}` : "目前為一般瀏覽，尚未帶入推薦碼。";
 
+resolveMemberLineUrl();
 trackEvent("page_view");
 
 document.getElementById("learnMore").addEventListener("click", async () => {
@@ -131,15 +132,42 @@ async function handleLineClick(statusId) {
   const status = document.getElementById(statusId);
   status.style.display = "block";
   status.textContent = "正在記錄你的諮詢來源…";
+
   await trackEvent("line_click");
 
-  if (!LINE_URL || LINE_URL.includes("請換成")) {
-    status.textContent = "LINE 官方帳號網址尚未設定，請聯絡分享此頁給你的會員。";
+  if (!memberLineUrl) {
+    await resolveMemberLineUrl();
+  }
+
+  if (!memberLineUrl) {
+    status.textContent = "這位會員尚未設定 LINE 加好友網址，請直接聯絡分享此頁給你的會員。";
     return;
   }
 
   status.textContent = "即將開啟 LINE…";
-  setTimeout(() => { window.location.href = LINE_URL; }, 250);
+  setTimeout(() => { window.location.href = memberLineUrl; }, 250);
+}
+
+async function resolveMemberLineUrl() {
+  if (!ref) {
+    memberLineUrl = "";
+    return;
+  }
+
+  const { data, error } = await db
+    .from("lvvip_member_public")
+    .select("line_url")
+    .eq("ref_code", ref)
+    .eq("active", true)
+    .maybeSingle();
+
+  if (error) {
+    console.error("L-VVIP LINE lookup error:", error);
+    memberLineUrl = "";
+    return;
+  }
+
+  memberLineUrl = data?.line_url || "";
 }
 
 async function trackEvent(eventName) {
