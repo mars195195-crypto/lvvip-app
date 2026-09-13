@@ -1601,13 +1601,17 @@ Email
 <div class="card">
 
 <div class="card-title">
-LINE 自動提醒
+我的 LINE 導客連結
+</div>
+
+<div style="color:#9eacb9;line-height:1.8;margin-bottom:14px;">
+每位會員設定自己的 LINE 加好友網址。之後你的專屬導客頁會依推薦碼，自動把客戶帶到你的 LINE。
 </div>
 
 <div class="profile-row">
 
 <div class="profile-label">
-LINE 狀態
+LINE 導客狀態
 </div>
 
 <div
@@ -1619,108 +1623,51 @@ LINE 狀態
 
 </div>
 
-
-<div
-    id="lineBindPanel"
+<div class="field" style="margin-top:14px;">
+<label for="lineUrlInput">
+LINE 加好友網址
+</label>
+<input
+    id="lineUrlInput"
+    type="url"
+    inputmode="url"
+    autocomplete="url"
+    placeholder="例如：https://line.me/ti/p/xxxxx 或 https://lin.ee/xxxxx"
 >
+</div>
 
 <button
-    id="generateBindCode"
+    id="saveLineUrl"
     class="primary-button"
-    style="margin-top:12px;"
+    style="margin-top:8px;"
 >
-產生 LINE 綁定碼
+儲存我的 LINE 網址
 </button>
 
-
-<div
-    id="bindCodePanel"
-    class="hidden"
->
-
-<div
-    id="bindCode"
-    class="bind-code"
-></div>
-
-<div
-    style="
-        text-align:center;
-        color:#91a2af;
-        font-size:12px;
-    "
->
-10 分鐘內有效
-</div>
-
 <button
-    id="copyBindCode"
-    class="quick-button"
-    style="
-        width:100%;
-        margin-top:10px;
-    "
->
-複製綁定碼
-</button>
-
-<a
-    id="lineAddLink"
-    href="#"
-    target="_blank"
-    style="
-        text-decoration:none;
-    "
->
-
-<button
+    id="testLineUrl"
     class="quick-button green"
-    style="
-        width:100%;
-        margin-top:8px;
-    "
+    style="width:100%;margin-top:10px;"
 >
-開啟 LINE 官方帳號
+測試開啟我的 LINE
 </button>
-
-</a>
-
-</div>
-
-</div>
-
-
-<div
-    id="lineLinkedPanel"
-    class="hidden"
->
-
-<div
-    style="
-        margin-top:12px;
-        color:#76e5a3;
-        line-height:1.8;
-    "
->
-✓ 已完成 LINE 綁定。<br><br>
-每天有待辦時，系統就可以透過 LINE 提醒你。
-</div>
 
 <button
-    id="unlinkLine"
+    id="clearLineUrl"
     class="quick-button red"
-    style="
-        width:100%;
-        margin-top:12px;
-    "
+    style="width:100%;margin-top:10px;"
 >
-解除 LINE 綁定
+清除 LINE 網址
 </button>
 
+<div
+    id="lineHelp"
+    style="margin-top:12px;color:#91a2af;font-size:12px;line-height:1.8;"
+>
+儲存後，你的導客網址不需要更改；系統會依推薦碼自動找到你的 LINE。
 </div>
 
 </div>
-
 
 <div class="card">
 
@@ -1850,10 +1797,6 @@ const SUPABASE_KEY =
     "sb_publishable_j7YAOitklhJeq79wu5N0sQ_xRuo_jfI";
 
 
-const LINE_ADD_URL =
-    "https://lin.ee/請換成你的LINE網址";
-
-
 /*
 ========================================================
 SUPABASE
@@ -1899,9 +1842,6 @@ let leadFilter =
 
 let taskFilter =
     "today";
-
-let linePolling =
-    null;
 
 
 const STATUS_LABELS = {
@@ -2226,7 +2166,9 @@ async function loadAll() {
 
             loadShareContents(),
 
-            loadShareLogs()
+            loadShareLogs(),
+
+            loadLineContact()
 
         ]);
 
@@ -2577,6 +2519,57 @@ function chooseTodayContent() {
         ||
 
         null;
+
+}
+
+
+/*
+========================================================
+LOAD MEMBER PUBLIC CONTACT
+========================================================
+*/
+
+async function loadLineContact() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+        .from(
+            "lvvip_member_public"
+        )
+        .select(
+            "line_url"
+        )
+        .eq(
+            "member_id",
+            member.id
+        )
+        .maybeSingle();
+
+
+    if (
+        error
+    ) {
+
+        console.error(
+            "讀取 LINE 導客網址失敗:",
+            error
+        );
+
+        member.line_url =
+            "";
+
+        return;
+
+    }
+
+
+    member.line_url =
+        data?.line_url
+        ||
+        "";
 
 }
 
@@ -4524,10 +4517,12 @@ function renderProfile() {
 
     document
     .getElementById(
-        "lineAddLink"
+        "lineUrlInput"
     )
-    .href =
-        LINE_ADD_URL;
+    .value =
+        member.line_url
+        ||
+        "";
 
 
     renderLineStatus();
@@ -4614,17 +4609,11 @@ document
 
 /*
 ========================================================
-LINE STATUS
+LINE ROUTING STATUS
 ========================================================
 */
 
 function renderLineStatus() {
-
-    const connected =
-        Boolean(
-            member.line_user_id
-        );
-
 
     const status =
         document
@@ -4633,64 +4622,92 @@ function renderLineStatus() {
         );
 
 
-    if (connected) {
+    const hasUrl =
+        Boolean(
+            member.line_url
+        );
+
+
+    if (
+        hasUrl
+    ) {
 
         status.textContent =
-            "已綁定";
-
+            "已設定";
 
         status.className =
             "profile-value line-connected";
 
-
-        document
-        .getElementById(
-            "lineBindPanel"
-        )
-        .classList
-        .add(
-            "hidden"
-        );
-
-
-        document
-        .getElementById(
-            "lineLinkedPanel"
-        )
-        .classList
-        .remove(
-            "hidden"
-        );
-
-
     } else {
 
         status.textContent =
-            "尚未綁定";
-
+            "尚未設定";
 
         status.className =
             "profile-value line-off";
 
+    }
 
-        document
-        .getElementById(
-            "lineBindPanel"
+}
+
+
+function normalizeLineUrl(
+    value
+) {
+
+    const url =
+        String(
+            value
+            ||
+            ""
         )
-        .classList
-        .remove(
-            "hidden"
-        );
+        .trim();
 
 
-        document
-        .getElementById(
-            "lineLinkedPanel"
-        )
-        .classList
-        .add(
-            "hidden"
-        );
+    if (
+        !url
+    ) {
+
+        return "";
+
+    }
+
+
+    try {
+
+        const parsed =
+            new URL(
+                url
+            );
+
+
+        const host =
+            parsed.hostname
+            .toLowerCase();
+
+
+        if (
+            parsed.protocol !==
+            "https:"
+            ||
+            ![
+                "line.me",
+                "lin.ee"
+            ].includes(
+                host
+            )
+        ) {
+
+            return null;
+
+        }
+
+
+        return parsed.toString();
+
+    } catch {
+
+        return null;
 
     }
 
@@ -4699,13 +4716,13 @@ function renderLineStatus() {
 
 /*
 ========================================================
-GENERATE LINE CODE
+SAVE LINE URL
 ========================================================
 */
 
 document
 .getElementById(
-    "generateBindCode"
+    "saveLineUrl"
 )
 .addEventListener(
 
@@ -4713,85 +4730,117 @@ document
 
     async function() {
 
-        const button =
-            this;
-
-
-        button.disabled =
-            true;
-
-
-        button.textContent =
-            "產生中...";
-
-
-        const {
-            data,
-            error
-        } =
-            await db.functions
-            .invoke(
-
-                "line-bind-code",
-
-                {
-
-                    body: {
-
-                        action:
-                            "create"
-
-                    }
-
-                }
-
+        const input =
+            document
+            .getElementById(
+                "lineUrlInput"
             );
 
 
-        button.disabled =
-            false;
-
-
-        button.textContent =
-            "重新產生 LINE 綁定碼";
+        const value =
+            normalizeLineUrl(
+                input.value
+            );
 
 
         if (
-            error ||
-            !data?.ok
+            value === null
         ) {
 
             alert(
-                data?.error
-                ||
-                "綁定碼產生失敗"
+                "請輸入正確的 LINE 網址，例如 https://line.me/... 或 https://lin.ee/..."
             );
-
 
             return;
 
         }
 
 
-        document
-        .getElementById(
-            "bindCode"
-        )
-        .textContent =
-            data.code;
+        if (
+            !value
+        ) {
+
+            alert(
+                "請先輸入 LINE 加好友網址。"
+            );
+
+            return;
+
+        }
 
 
-        document
-        .getElementById(
-            "bindCodePanel"
-        )
-        .classList
-        .remove(
-            "hidden"
+        const button =
+            this;
+
+
+        const oldText =
+            button.textContent;
+
+
+        button.disabled =
+            true;
+
+        button.textContent =
+            "儲存中...";
+
+
+        const {
+            error
+        } =
+            await db
+            .from(
+                "lvvip_member_public"
+            )
+            .update(
+                {
+                    line_url:
+                        value
+                }
+            )
+            .eq(
+                "member_id",
+                member.id
+            );
+
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            oldText;
+
+
+        if (
+            error
+        ) {
+
+            console.error(
+                error
+            );
+
+            alert(
+                "LINE 網址儲存失敗，請確認資料庫設定已完成。"
+            );
+
+            return;
+
+        }
+
+
+        member.line_url =
+            value;
+
+
+        input.value =
+            value;
+
+
+        renderLineStatus();
+
+
+        alert(
+            "LINE 網址已儲存。你的專屬導客頁現在會自動導向這個 LINE。"
         );
-
-
-        startLinePolling();
 
     }
 
@@ -4800,48 +4849,47 @@ document
 
 /*
 ========================================================
-COPY LINE CODE
+TEST LINE URL
 ========================================================
 */
 
 document
 .getElementById(
-    "copyBindCode"
+    "testLineUrl"
 )
 .addEventListener(
 
     "click",
 
-    async function() {
+    function() {
 
-        const code =
-            document
-            .getElementById(
-                "bindCode"
-            )
-            .textContent;
-
-
-        await copyText(
-            code
-        );
+        const value =
+            normalizeLineUrl(
+                document
+                .getElementById(
+                    "lineUrlInput"
+                )
+                .value
+            );
 
 
-        this.textContent =
-            "✓ 已複製";
+        if (
+            !value
+        ) {
+
+            alert(
+                "請先輸入並儲存 LINE 網址。"
+            );
+
+            return;
+
+        }
 
 
-        setTimeout(
-
-            () => {
-
-                this.textContent =
-                    "複製綁定碼";
-
-            },
-
-            1200
-
+        window.open(
+            value,
+            "_blank",
+            "noopener"
         );
 
     }
@@ -4851,108 +4899,13 @@ document
 
 /*
 ========================================================
-POLL LINE
-========================================================
-*/
-
-function startLinePolling() {
-
-    if (
-        linePolling
-    ) {
-
-        clearInterval(
-            linePolling
-        );
-
-    }
-
-
-    linePolling =
-        setInterval(
-
-            async function() {
-
-                const {
-                    data,
-                    error
-                } =
-                    await db
-
-                    .from(
-                        "lvvip_members"
-                    )
-
-                    .select(
-                        `
-                        line_user_id,
-                        line_linked_at,
-                        line_notify_enabled
-                        `
-                    )
-
-                    .eq(
-                        "id",
-                        member.id
-                    )
-
-                    .single();
-
-
-                if (
-                    !error &&
-                    data &&
-                    data.line_user_id
-                ) {
-
-                    clearInterval(
-                        linePolling
-                    );
-
-
-                    linePolling =
-                        null;
-
-
-                    member.line_user_id =
-                        data.line_user_id;
-
-
-                    member.line_linked_at =
-                        data.line_linked_at;
-
-
-                    member.line_notify_enabled =
-                        data.line_notify_enabled;
-
-
-                    renderLineStatus();
-
-
-                    alert(
-                        "LINE 綁定成功！"
-                    );
-
-                }
-
-            },
-
-            3000
-
-        );
-
-}
-
-
-/*
-========================================================
-UNLINK LINE
+CLEAR LINE URL
 ========================================================
 */
 
 document
 .getElementById(
-    "unlinkLine"
+    "clearLineUrl"
 )
 .addEventListener(
 
@@ -4962,7 +4915,7 @@ document
 
         if (
             !confirm(
-                "確定解除 LINE 綁定？"
+                "確定清除自己的 LINE 導客網址？"
             )
         ) {
 
@@ -4972,49 +4925,51 @@ document
 
 
         const {
-            data,
             error
         } =
-            await db.functions
-            .invoke(
-
-                "line-bind-code",
-
+            await db
+            .from(
+                "lvvip_member_public"
+            )
+            .update(
                 {
-
-                    body: {
-
-                        action:
-                            "unlink"
-
-                    }
-
+                    line_url:
+                        null
                 }
-
+            )
+            .eq(
+                "member_id",
+                member.id
             );
 
 
         if (
-            error ||
-            !data?.ok
+            error
         ) {
 
-            alert(
-                "解除失敗"
+            console.error(
+                error
             );
 
+            alert(
+                "清除失敗。"
+            );
 
             return;
 
         }
 
 
-        member.line_user_id =
-            null;
+        member.line_url =
+            "";
 
 
-        member.line_linked_at =
-            null;
+        document
+        .getElementById(
+            "lineUrlInput"
+        )
+        .value =
+            "";
 
 
         renderLineStatus();
