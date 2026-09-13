@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<title>L-VVIP 總管理儀表板 V12 Fixed</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;overflow-x:hidden;background:linear-gradient(180deg,#06111f,#0a1a29);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif}button,input,select,textarea{font:inherit;max-width:100%}.hidden{display:none!important}.shell{width:min(100%,1100px);margin:auto;padding:18px 14px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{color:#f1cf72;font-weight:900}.title{font-size:28px;font-weight:900}.sub,.note{color:#93a3af;font-size:13px;line-height:1.7}.btn{border:1px solid #3d566a;background:#10283a;color:#fff;border-radius:10px;padding:10px 13px;font-weight:800}.btn.red{background:#74383c;border:0}.panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;margin-bottom:14px}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:22px}.login-card{width:min(100%,430px);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:28px}.login-logo{color:#f1cf72;font-size:30px;font-weight:900}.login-title{font-size:24px;font-weight:900;margin:6px 0}.login-sub{color:#9eacb9;line-height:1.7;margin-bottom:18px}.field{margin-bottom:13px}.field label{display:block;color:#bdc7cf;margin-bottom:6px}.field input{width:100%;padding:13px;border-radius:10px;border:1px solid #31495d;background:#071724;color:#fff}.primary{width:100%;border:0;border-radius:11px;padding:14px;background:linear-gradient(90deg,#edc75d,#ffe79a);color:#13202a;font-weight:900}.login-error,.error-box{color:#ffaaaa;line-height:1.6;margin-top:10px}.filters{display:flex;gap:8px;overflow-x:auto}.filter{border:0;border-radius:999px;padding:9px 13px;background:#122b3e;color:#d4dde4;white-space:nowrap;font-weight:800}.filter.active{background:#f1cf72;color:#13202a}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.kpi{padding:16px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.kpi-label{color:#96a7b4;font-size:12px}.kpi-num{font-size:29px;font-weight:900}.kpi-small{font-size:12px;color:#e7ce7c}.section-title{font-size:19px;font-weight:900;margin-bottom:12px}.grid2{display:grid;grid-template-columns:1fr;gap:14px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px}th{color:#f1cf72}.muted{color:#8fa0ad}.good{color:#70e19e}.warn{color:#f1cf72}.bad{color:#ff9a9a}.rank{font-weight:900;color:#f1cf72}.funnel{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.funnel-item{padding:14px;border-radius:13px;background:#0e2637}.funnel-label{color:#9eacb8;font-size:12px}.funnel-num{font-size:24px;font-weight:900}.loading{text-align:center;color:#91a2af;padding:40px}
+.task-card-list{display:grid;grid-template-columns:1fr;gap:11px}
+.task-card{background:#0b2030;border:1px solid rgba(255,255,255,.09);border-radius:15px;padding:15px}
+.task-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:13px}
+.task-badge{display:inline-flex;align-items:center;border-radius:999px;padding:6px 10px;background:#173449;color:#d9e4ea;font-size:12px;font-weight:900}
+.task-badge.overdue{background:#6b3035;color:#ffd6d6}
+.task-badge.todayAppt,.task-badge.todayFollow{background:#5c4c20;color:#ffe69a}
+.task-ref{color:#f1cf72;font-weight:900;font-size:13px}
+.task-customer{font-size:20px;font-weight:900;line-height:1.35;margin-bottom:5px}
+.task-member{color:#9eb0bd;font-size:13px;margin-bottom:13px}
+.task-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.task-info{background:rgba(255,255,255,.035);border-radius:10px;padding:10px;min-width:0}
+.task-info.full{grid-column:1/-1}
+.task-info-label{color:#8799a7;font-size:11px;margin-bottom:4px}
+.task-info-value{color:#eef3f6;font-size:13px;line-height:1.45;overflow-wrap:anywhere}
+.task-empty{text-align:center;padding:24px 12px;color:#8fa0ad;background:rgba(255,255,255,.025);border-radius:13px}
+
+.task-action{
+  width:100%;
+  margin-top:12px;
+  border:0;
+  border-radius:11px;
+  padding:12px 14px;
+  background:linear-gradient(90deg,#edc75d,#ffe79a);
+  color:#13202a;
+  font-weight:900;
+}
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  background:rgba(0,0,0,.72);
+  display:none;
+  align-items:flex-end;
+  justify-content:center;
+}
+.modal-backdrop.show{display:flex}
+.modal-sheet{
+  width:min(100%,720px);
+  max-height:92vh;
+  overflow:auto;
+  background:#0a1b2a;
+  border:1px solid rgba(255,255,255,.1);
+  border-radius:22px 22px 0 0;
+  padding:18px 16px calc(22px + env(safe-area-inset-bottom));
+  box-shadow:0 -12px 40px rgba(0,0,0,.35);
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+.modal-title{font-size:23px;font-weight:900}
+.modal-sub{color:#92a4b2;font-size:13px;margin-top:4px}
+.modal-close{
+  border:1px solid #395368;
+  background:#10283a;
+  color:#fff;
+  border-radius:10px;
+  padding:8px 11px;
+  font-weight:900;
+}
+.modal-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.modal-field{min-width:0}
+.modal-field.full{grid-column:1/-1}
+.modal-field label{
+  display:block;
+  color:#9eacb8;
+  font-size:12px;
+  margin-bottom:5px;
+}
+.modal-field input,
+.modal-field select,
+.modal-field textarea{
+  width:100%;
+  border:1px solid #31495d;
+  border-radius:10px;
+  padding:11px;
+  background:#071724;
+  color:#fff;
+}
+.modal-field textarea{
+  min-height:100px;
+  resize:vertical;
+}
+.modal-meta{
+  margin:10px 0 14px;
+  padding:12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+  color:#b9c6cf;
+  line-height:1.7;
+  font-size:13px;
+}
+.modal-save{
+  width:100%;
+  margin-top:14px;
+  border:0;
+  border-radius:12px;
+  padding:14px;
+  background:#f1cf72;
+  color:#13202a;
+  font-weight:900;
+}
+.modal-message{
+  min-height:22px;
+  margin-top:10px;
+  font-size:13px;
+}
+.modal-message.ok{color:#70e19e}
+.modal-message.bad{color:#ff9a9a}
+@media(max-width:520px){.modal-grid{grid-template-columns:1fr}.modal-field.full{grid-column:auto}}
+
+
+/* ===== V7 手機按鈕網格 ===== */
+#periodFilters,
+#taskFilters{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  overflow:visible;
+  padding-bottom:0;
+}
+#periodFilters .filter,
+#taskFilters .filter{
+  width:100%;
+  min-width:0;
+  white-space:normal;
+  line-height:1.25;
+  text-align:center;
+  padding:11px 6px;
+}
+@media(max-width:390px){
+  #periodFilters,
+  #taskFilters{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+@media(min-width:760px){
+  #periodFilters,
+  #taskFilters{
+    display:flex;
+    overflow-x:auto;
+  }
+  #periodFilters .filter,
+  #taskFilters .filter{
+    width:auto;
+    white-space:nowrap;
+    padding:9px 13px;
+  }
+}
+
+/* ===== V6 手機完整適配 ===== */
+.modal-backdrop{
+  width:100vw;
+  max-width:100vw;
+  overflow:hidden;
+}
+.modal-sheet{
+  min-width:0;
+  max-width:720px;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+}
+.modal-head{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#0a1b2a;
+  padding:4px 0 10px;
+}
+.modal-head>div{min-width:0}
+.modal-title,.modal-sub{overflow-wrap:anywhere}
+.modal-grid,.modal-field{width:100%;max-width:100%;min-width:0}
+.modal-field input,
+.modal-field select,
+.modal-field textarea{
+  display:block;
+  min-width:0;
+  max-width:100%;
+  font-size:16px;
+}
+.modal-field input[type="datetime-local"]{
+  width:100%;
+  min-width:0;
+  -webkit-appearance:none;
+  appearance:none;
+}
+.modal-actions{
+  position:sticky;
+  bottom:0;
+  z-index:4;
+  margin:14px -16px calc(-22px - env(safe-area-inset-bottom));
+  padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+  background:linear-gradient(180deg,rgba(10,27,42,.15),#0a1b2a 24%);
+}
+.modal-save{
+  width:100%;
+  max-width:100%;
+  margin:0;
+  min-height:52px;
+}
+.modal-message{margin-top:8px}
+@media(max-width:520px){
+  .modal-backdrop.show{
+    align-items:stretch;
+    justify-content:stretch;
+  }
+  .modal-sheet{
+    width:100vw;
+    max-width:100vw;
+    height:100dvh;
+    max-height:100dvh;
+    border-radius:0;
+    border-left:0;
+    border-right:0;
+    padding:
+      calc(10px + env(safe-area-inset-top))
+      14px
+      calc(18px + env(safe-area-inset-bottom));
+  }
+  .modal-head{
+    margin:calc(-10px - env(safe-area-inset-top)) -14px 14px;
+    padding:
+      calc(12px + env(safe-area-inset-top))
+      14px
+      12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .modal-title{font-size:21px}
+  .modal-close{
+    flex:0 0 auto;
+    min-width:64px;
+    min-height:42px;
+  }
+  .modal-meta{
+    margin-top:0;
+    font-size:13px;
+  }
+  .modal-grid{
+    grid-template-columns:1fr;
+    gap:12px;
+  }
+  .modal-field.full{grid-column:auto}
+  .modal-field input,
+  .modal-field select,
+  .modal-field textarea{
+    width:100%;
+    min-height:48px;
+    padding:12px;
+    border-radius:12px;
+  }
+  .modal-field textarea{
+    min-height:120px;
+  }
+  .modal-actions{
+    margin:16px -14px calc(-18px - env(safe-area-inset-bottom));
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+  }
+}
+
+
+@media(max-width:390px){.task-grid{grid-template-columns:1fr}}
+
+@media(min-width:760px){.kpis{grid-template-columns:repeat(6,1fr)}.grid2{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:repeat(6,1fr)}.task-card-list{grid-template-columns:repeat(2,1fr)}}
+
+/* ===== V8 明日／未來跟進 ===== */
+#taskFilters{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+@media(min-width:480px) and (max-width:759px){
+  #taskFilters{
+    grid-template-columns:repeat(4,minmax(0,1fr));
+  }
+}
+
+
+/* ===== V9 明日／未來預約 ===== */
+#taskFilters{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+}
+@media(min-width:600px) and (max-width:759px){
+  #taskFilters{
+    grid-template-columns:repeat(5,minmax(0,1fr));
+  }
+}
+
+
+/* ===== V10 一鍵更新 CRM ===== */
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:14px;
+}
+.quick-btn{
+  min-width:0;
+  border:1px solid #355066;
+  border-radius:11px;
+  padding:11px 7px;
+  background:#123047;
+  color:#edf3f7;
+  font-weight:900;
+  line-height:1.25;
+}
+.quick-btn:disabled{
+  opacity:.55;
+}
+.quick-won{
+  background:#5c4b1f;
+  border-color:#8d7534;
+  color:#ffe697;
+}
+.quick-detail{
+  background:linear-gradient(90deg,#edc75d,#ffe79a);
+  border:0;
+  color:#13202a;
+}
+.quick-result{
+  grid-column:1/-1;
+  min-height:18px;
+  font-size:12px;
+  line-height:1.4;
+}
+.quick-result.ok{color:#70e19e}
+.quick-result.bad{color:#ff9a9a}
+@media(min-width:560px) and (max-width:759px){
+  .quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+
+/* ===== V11 CRM 狀態防呆 ===== */
+.quick-btn.quick-current{
+  background:#1f5b43;
+  border-color:#3b8f68;
+  color:#d8ffe9;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+.quick-btn.quick-past{
+  background:#102332;
+  color:#728796;
+  border-color:#263d50;
+}
+.quick-btn.quick-lost{
+  background:#542f35;
+  border-color:#7d454c;
+  color:#ffd3d7;
+}
+.quick-btn[disabled]{
+  cursor:not-allowed;
+}
+.status-guard-note{
+  grid-column:1/-1;
+  padding:9px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.035);
+  color:#93a5b2;
+  font-size:12px;
+  line-height:1.45;
+}
+
+
+/* ===== V12 已結案紀錄中心 ===== */
+.closed-kpis{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;
+  margin-bottom:14px;
+}
+.closed-kpi{
+  background:rgba(255,255,255,.035);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:13px;
+  padding:12px;
+  min-width:0;
+}
+.closed-kpi-label{
+  color:#8fa0ad;
+  font-size:12px;
+  margin-bottom:5px;
+}
+.closed-kpi-num{
+  font-size:25px;
+  font-weight:900;
+}
+.closed-toolbar{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:10px;
+  margin-bottom:14px;
+}
+#closedFilters{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  overflow:visible;
+}
+#closedFilters .filter{
+  width:100%;
+  min-width:0;
+  text-align:center;
+}
+.closed-search{
+  width:100%;
+  border:1px solid #31495d;
+  border-radius:12px;
+  padding:12px 13px;
+  background:#071724;
+  color:#fff;
+  font-size:16px;
+}
+.closed-card-list{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:11px;
+}
+.closed-card{
+  background:#0b2030;
+  border:1px solid rgba(255,255,255,.09);
+  border-radius:15px;
+  padding:15px;
+}
+.closed-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:12px;
+}
+.closed-badge{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:900;
+}
+.closed-badge.won{
+  background:#5c4b1f;
+  color:#ffe697;
+}
+.closed-badge.lost{
+  background:#542f35;
+  color:#ffd3d7;
+}
+.closed-ref{
+  color:#f1cf72;
+  font-weight:900;
+  font-size:13px;
+}
+.closed-name{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:5px;
+}
+.closed-member{
+  color:#9eb0bd;
+  font-size:13px;
+  margin-bottom:12px;
+}
+.closed-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.closed-info{
+  background:rgba(255,255,255,.035);
+  border-radius:10px;
+  padding:10px;
+  min-width:0;
+}
+.closed-info.full{
+  grid-column:1/-1;
+}
+.closed-info-label{
+  color:#8799a7;
+  font-size:11px;
+  margin-bottom:4px;
+}
+.closed-info-value{
+  color:#eef3f6;
+  font-size:13px;
+  line-height:1.45;
+  overflow-wrap:anywhere;
+}
+.closed-detail{
+  width:100%;
+  margin-top:12px;
+  border:0;
+  border-radius:11px;
+  padding:12px 14px;
+  background:#173b55;
+  color:#fff;
+  font-weight:900;
+}
+.closed-empty{
+  text-align:center;
+  padding:24px 12px;
+  color:#8fa0ad;
+  background:rgba(255,255,255,.025);
+  border-radius:13px;
+}
+@media(max-width:390px){
+  .closed-kpis{grid-template-columns:1fr}
+  .closed-grid{grid-template-columns:1fr}
+  .closed-info.full{grid-column:auto}
+}
+@media(min-width:760px){
+  .closed-toolbar{grid-template-columns:auto minmax(240px,1fr);align-items:center}
+  .closed-card-list{grid-template-columns:repeat(2,1fr)}
+}
+
+
+/* ===== V12 FIX：防止整個畫面左右位移 ===== */
+html{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  overscroll-behavior-x:none;
+}
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden !important;
+  overscroll-behavior-x:none;
+  position:relative;
+}
+
+#dashboard.shell{
+  width:100%;
+  max-width:1100px;
+  min-width:0;
+  margin-left:auto;
+  margin-right:auto;
+  overflow-x:hidden;
+}
+
+#content,
+.panel,
+.grid2,
+.kpis,
+.funnel,
+.task-card-list,
+.task-card,
+.quick-actions,
+.closed-card-list,
+.closed-card,
+.closed-toolbar,
+.closed-kpis,
+.closed-grid{
+  min-width:0;
+  max-width:100%;
+}
+
+.panel{
+  overflow:hidden;
+}
+
+.table-wrap{
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+#periodFilters,
+#taskFilters,
+#closedFilters{
+  max-width:100%;
+  min-width:0;
+}
+
+.closed-search,
+.closed-detail,
+.task-action,
+.quick-btn{
+  min-width:0;
+  max-width:100%;
+}
+
+.topbar{
+  min-width:0;
+  max-width:100%;
+}
+
+@media(max-width:520px){
+  .shell{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .panel{
+    padding-left:14px;
+    padding-right:14px;
+  }
+
+  .topbar{
+    flex-wrap:wrap;
+  }
+
+  .topbar>div{
+    min-width:0;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="loginPage" class="login-wrap"><div class="login-card"><div class="login-logo">L-VVIP</div><div class="login-title">總管理儀表板</div><div class="login-sub">僅限 L-VVIP 管理員登入。請使用已設定為管理員的 Supabase 帳號。</div><form id="loginForm"><div class="field"><label>Email</label><input id="loginEmail" type="email" autocomplete="username" required></div><div class="field"><label>密碼</label><input id="loginPassword" type="password" autocomplete="current-password" required></div><button id="loginButton" class="primary" type="submit">登入總管理後台</button><div id="loginError" class="login-error"></div></form></div></div>
+<div id="dashboard" class="shell hidden">
+<div class="topbar"><div><div class="brand">L-VVIP</div><div class="title">總管理儀表板</div><div id="adminInfo" class="sub"></div></div><div><button id="refreshBtn" class="btn">重新整理</button> <button id="logoutBtn" class="btn red">登出</button></div></div>
+<div class="panel"><div class="section-title">統計期間</div><div class="filters" id="periodFilters"><button class="filter" data-days="1">24 小時</button><button class="filter active" data-days="7">7 天</button><button class="filter" data-days="30">30 天</button><button class="filter" data-days="90">90 天</button><button class="filter" data-days="all">全部</button></div></div>
+<div id="globalError" class="panel error-box hidden"></div><div id="loading" class="loading">載入總管理資料中...</div>
+<div id="content" class="hidden">
+<div class="kpis">
+<div class="kpi"><div class="kpi-label">會員總數</div><div id="kMembers" class="kpi-num">0</div><div id="kActiveMembers" class="kpi-small"></div></div>
+<div class="kpi"><div class="kpi-label">網站瀏覽</div><div id="kViews" class="kpi-num">0</div><div id="kVisitors" class="kpi-small"></div></div>
+<div class="kpi"><div class="kpi-label">LINE 不重複訪客</div><div id="kClicks" class="kpi-num">0</div><div id="kClickRate" class="kpi-small"></div></div>
+<div class="kpi"><div class="kpi-label">新名單</div><div id="kLeads" class="kpi-num">0</div><div id="kLeadRate" class="kpi-small"></div></div>
+<div class="kpi"><div class="kpi-label">期間成交</div><div id="kWins" class="kpi-num">0</div><div id="kWinRate" class="kpi-small"></div></div>
+<div class="kpi"><div class="kpi-label">平均成交時間</div><div id="kAvgClose" class="kpi-num">-</div><div class="kpi-small">名單建立→成交</div></div>
+</div>
+<div class="grid2"><div class="panel"><div class="section-title">名單漏斗</div><div class="funnel"><div class="funnel-item"><div class="funnel-label">新名單</div><div id="fLead" class="funnel-num">0</div></div><div class="funnel-item"><div class="funnel-label">已聯絡</div><div id="fContacted" class="funnel-num">0</div></div><div class="funnel-item"><div class="funnel-label">已預約</div><div id="fBooked" class="funnel-num">0</div></div><div class="funnel-item"><div class="funnel-label">已體驗</div><div id="fExperienced" class="funnel-num">0</div></div><div class="funnel-item"><div class="funnel-label">已加入</div><div id="fJoined" class="funnel-num">0</div></div><div class="funnel-item"><div class="funnel-label">已成交</div><div id="fWon" class="funnel-num">0</div></div></div></div><div class="panel"><div class="section-title">目前待追蹤</div><div id="taskSummary" class="note"></div></div></div>
+
+<div class="panel">
+  <div class="section-title">今日待追蹤中心</div><div class="note" style="margin:-5px 0 12px">點選分類查看名單；CRM 只允許往前推進，避免誤退回，亦可標記未成交。</div>
+  <div class="filters" id="taskFilters" style="margin-bottom:14px">
+    <button class="filter task-filter active" data-task="all">全部</button>
+    <button class="filter task-filter" data-task="pending">待聯絡</button>
+    <button class="filter task-filter" data-task="todayFollow">今日跟進</button>
+    <button class="filter task-filter" data-task="tomorrowFollow">明日跟進</button>
+    <button class="filter task-filter" data-task="futureFollow">未來跟進</button>
+    <button class="filter task-filter" data-task="todayAppt">今日預約</button>
+    <button class="filter task-filter" data-task="tomorrowAppt">明日預約</button>
+    <button class="filter task-filter" data-task="futureAppt">未來預約</button>
+    <button class="filter task-filter" data-task="overdue">逾期</button>
+    <button class="filter task-filter" data-task="idle3">超過3天</button>
+  </div>
+  <div id="taskCards" class="task-card-list"></div>
+</div>
+
+<div class="panel">
+  <div class="section-title">已結案紀錄中心</div>
+  <div class="note" style="margin:-5px 0 12px">
+    已成交與未成交客戶會保留在這裡，可依目前統計期間查詢歷史紀錄。
+  </div>
+
+  <div class="closed-kpis">
+    <div class="closed-kpi">
+      <div class="closed-kpi-label">期間結案</div>
+      <div id="closedTotal" class="closed-kpi-num">0</div>
+    </div>
+    <div class="closed-kpi">
+      <div class="closed-kpi-label">已成交</div>
+      <div id="closedWon" class="closed-kpi-num">0</div>
+    </div>
+    <div class="closed-kpi">
+      <div class="closed-kpi-label">未成交</div>
+      <div id="closedLost" class="closed-kpi-num">0</div>
+    </div>
+  </div>
+
+  <div class="closed-toolbar">
+    <div class="filters" id="closedFilters">
+      <button class="filter closed-filter active" data-closed="all">全部</button>
+      <button class="filter closed-filter" data-closed="won">已成交</button>
+      <button class="filter closed-filter" data-closed="lost">未成交</button>
+    </div>
+    <input id="closedSearch" class="closed-search" type="search"
+      placeholder="搜尋客戶、會員、推薦碼">
+  </div>
+
+  <div id="closedCards" class="closed-card-list"></div>
+</div>
+
+<div class="panel"><div class="section-title">會員排行榜</div><div class="table-wrap"><table><thead><tr><th>排名</th><th>會員</th><th>推薦碼</th><th>瀏覽</th><th>LINE</th><th>名單</th><th>成交</th><th>成交率</th></tr></thead><tbody id="memberRows"></tbody></table></div></div>
+<div class="grid2"><div class="panel"><div class="section-title">來源成效</div><div class="table-wrap"><table><thead><tr><th>來源</th><th>瀏覽</th><th>不重複 LINE</th><th>LINE 總點擊</th><th>名單</th><th>成交</th></tr></thead><tbody id="sourceRows"></tbody></table></div></div><div class="panel"><div class="section-title">每日趨勢</div><div class="table-wrap"><table><thead><tr><th>日期</th><th>瀏覽</th><th>不重複 LINE</th><th>LINE 總點擊</th><th>新名單</th><th>成交</th></tr></thead><tbody id="dailyRows"></tbody></table></div></div></div>
+<div class="panel"><div class="section-title">全部會員狀態</div><div class="table-wrap"><table><thead><tr><th>會員</th><th>推薦碼</th><th>狀態</th><th>LINE</th><th>Email</th><th>加入時間</th></tr></thead><tbody id="allMembersRows"></tbody></table></div></div>
+<div class="panel note">本頁只使用 Supabase Publishable Key；真正的資料權限仍由 Supabase Auth 與 RLS 控制。</div>
+</div></div>
+<div id="leadModal" class="modal-backdrop" aria-hidden="true">
+  <div class="modal-sheet" role="dialog" aria-modal="true" aria-labelledby="leadModalTitle">
+    <div class="modal-head">
+      <div>
+        <div id="leadModalTitle" class="modal-title">客戶處理</div>
+        <div id="leadModalSub" class="modal-sub"></div>
+      </div>
+      <button id="leadModalClose" class="modal-close" type="button">關閉</button>
+    </div>
+
+    <div id="leadModalMeta" class="modal-meta"></div>
+
+    <div class="modal-grid">
+      <div class="modal-field">
+        <label>CRM 進度</label>
+        <select id="modalStatus">
+          <option value="line_clicked">待聯絡</option>
+          <option value="contacted">已聯絡</option>
+          <option value="booked">已預約</option>
+          <option value="experienced">已體驗</option>
+          <option value="joined">已加入</option>
+          <option value="closed_won">已成交</option>
+          <option value="closed_lost">未成交</option>
+        </select>
+      </div>
+
+      <div class="modal-field">
+        <label>姓名／稱呼</label>
+        <input id="modalContactName" type="text">
+      </div>
+
+      <div class="modal-field">
+        <label>下次跟進</label>
+        <input id="modalNextFollow" type="datetime-local">
+      </div>
+
+      <div class="modal-field">
+        <label>預約／體驗</label>
+        <input id="modalAppointment" type="datetime-local">
+      </div>
+
+      <div class="modal-field full">
+        <label>備註</label>
+        <textarea id="modalNote"></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button id="modalSave" class="modal-save" type="button">儲存處理結果</button>
+      <div id="modalMessage" class="modal-message"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL="https://rwtbrjhgpufmkcdltjge.supabase.co";
+const SUPABASE_KEY="sb_publishable_j7YAOitklhJeq79wu5N0sQ_xRuo_jfI";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const PAGE_SIZE=1000,MAX_PAGES=100;let selectedDays=7,selectedTask="all",selectedClosed="all",members=[],publicRows=[],events=[],leads=[];
+const $=id=>document.getElementById(id),fmt=new Intl.NumberFormat("zh-TW");
+function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+function pct(a,b){return b?(a/b*100).toFixed(1)+"%":"0%"}
+function sinceIso(){return selectedDays==="all"?null:new Date(Date.now()-Number(selectedDays)*86400000).toISOString()}
+function inPeriod(v){if(!v)return false;const s=sinceIso();return !s||new Date(v)>=new Date(s)}
+function dateTW(v){return v?new Date(v).toLocaleString("zh-TW",{timeZone:"Asia/Taipei",hour12:false}):"-"}
+function dayTW(v){return v?new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Taipei",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date(v)):"-"}
+function sourceOf(r){return (r?.source||r?.utm_source||"direct").trim()||"direct"}
+async function fetchPaged(table,cols,orderCol,filterFn){let out=[];for(let p=0;p<MAX_PAGES;p++){let q=db.from(table).select(cols).order(orderCol,{ascending:false}).range(p*PAGE_SIZE,p*PAGE_SIZE+PAGE_SIZE-1);if(filterFn)q=filterFn(q);const{data,error}=await q;if(error)throw error;out.push(...(data||[]));if(!data||data.length<PAGE_SIZE)break}return out}
+async function checkAdmin(user){const{data,error}=await db.from("lvvip_admins").select("user_id,email,active").eq("user_id",user.id).eq("active",true).maybeSingle();if(error)throw new Error("無法確認管理員權限："+error.message);if(!data)throw new Error("這個帳號沒有 L-VVIP 管理員權限，請改用管理員帳號登入。");return data}
+async function startDashboard(){const{data:{user},error}=await db.auth.getUser();if(error||!user){showLogin();return}try{const a=await checkAdmin(user);$("adminInfo").textContent=(a.email||user.email||"管理員")+"｜管理員";$("loginPage").classList.add("hidden");$("dashboard").classList.remove("hidden");await loadAll()}catch(e){await db.auth.signOut();showLogin(e.message||String(e))}}
+function showLogin(m=""){$("dashboard").classList.add("hidden");$("loginPage").classList.remove("hidden");$("loginError").textContent=m}
+async function loadAll(){$("loading").classList.remove("hidden");$("content").classList.add("hidden");$("globalError").classList.add("hidden");try{const s=sinceIso();[members,publicRows,events,leads]=await Promise.all([fetchPaged("lvvip_members","id,email,ref_code,display_name,active,created_at","created_at"),fetchPaged("lvvip_member_public","member_id,ref_code,line_url,active,updated_at","updated_at"),fetchPaged("lvvip_events","created_at,event,visitor_id,source,ref,utm_source","created_at",q=>s?q.gte("created_at",s):q),fetchPaged("lvvip_leads","id,visitor_id,ref_code,source,status,contact_name,contact_note,created_at,updated_at,last_follow_up_at,next_follow_up_at,appointment_at,contacted_at,booked_at,experienced_at,joined_at,closed_won_at,closed_lost_at","created_at")]);render();$("loading").classList.add("hidden");$("content").classList.remove("hidden")}catch(e){$("loading").classList.add("hidden");$("globalError").textContent="載入失敗："+(e?.message||e);$("globalError").classList.remove("hidden")}}
+function render(){const pl=leads.filter(x=>inPeriod(x.created_at)),pw=leads.filter(x=>inPeriod(x.closed_won_at)),v=events.filter(x=>x.event==="page_view"),c=events.filter(x=>x.event==="line_click"),vis=new Set(v.map(x=>x.visitor_id).filter(Boolean)).size,lineVisitors=new Set(c.map(x=>x.visitor_id).filter(Boolean)).size;$("kMembers").textContent=fmt.format(members.length);$("kActiveMembers").textContent="啟用 "+members.filter(x=>x.active).length;$("kViews").textContent=v.length;$("kVisitors").textContent="不重複訪客 "+vis;$("kClicks").textContent=lineVisitors;$("kClickRate").textContent="訪客→LINE "+pct(lineVisitors,vis)+"｜總點擊 "+c.length;$("kLeads").textContent=pl.length;$("kLeadRate").textContent="訪客→名單 "+pct(pl.length,vis);$("kWins").textContent=pw.length;$("kWinRate").textContent="名單→成交 "+pct(pw.length,pl.length);const h=pw.filter(x=>x.created_at&&x.closed_won_at).map(x=>(new Date(x.closed_won_at)-new Date(x.created_at))/3600000).filter(x=>Number.isFinite(x)&&x>=0);$("kAvgClose").textContent=h.length?((h.reduce((a,b)=>a+b,0)/h.length)<48?(h.reduce((a,b)=>a+b,0)/h.length).toFixed(1)+"小時":((h.reduce((a,b)=>a+b,0)/h.length)/24).toFixed(1)+"天"):"-";$("fLead").textContent=pl.length;$("fContacted").textContent=pl.filter(x=>x.contacted_at).length;$("fBooked").textContent=pl.filter(x=>x.booked_at).length;$("fExperienced").textContent=pl.filter(x=>x.experienced_at).length;$("fJoined").textContent=pl.filter(x=>x.joined_at).length;$("fWon").textContent=pl.filter(x=>x.closed_won_at).length;renderTasks();renderTaskCenter();renderClosedCenter();renderMembers();renderSources();renderDaily();renderAllMembers()}
+function renderTasks(){
+  const open=leads.filter(x=>!["closed_won","closed_lost"].includes(x.status));
+  const now=Date.now();
+  const today=dayTW(new Date());
+  const tomorrow=dayTW(new Date(Date.now()+86400000));
+
+  const overdue=open.filter(x=>x.next_follow_up_at&&new Date(x.next_follow_up_at).getTime()<now);
+  const pending=open.filter(x=>x.status==="line_clicked"&&!x.contacted_at);
+
+  const todayFollow=open.filter(x=>x.next_follow_up_at&&dayTW(x.next_follow_up_at)===today);
+  const tomorrowFollow=open.filter(x=>x.next_follow_up_at&&dayTW(x.next_follow_up_at)===tomorrow);
+  const futureFollow=open.filter(x=>{
+    if(!x.next_follow_up_at) return false;
+    return dayTW(x.next_follow_up_at)>tomorrow;
+  });
+
+  const todayAppt=open.filter(x=>x.appointment_at&&dayTW(x.appointment_at)===today);
+  const tomorrowAppt=open.filter(x=>x.appointment_at&&dayTW(x.appointment_at)===tomorrow);
+  const futureAppt=open.filter(x=>{
+    if(!x.appointment_at) return false;
+    return dayTW(x.appointment_at)>tomorrow;
+  });
+
+  $("taskSummary").innerHTML=
+    `待聯絡：<b class="${pending.length?'warn':''}">${pending.length}</b><br>`+
+    `今天跟進：<b>${todayFollow.length}</b><br>`+
+    `明日跟進：<b>${tomorrowFollow.length}</b><br>`+
+    `未來跟進：<b>${futureFollow.length}</b><br>`+
+    `今天預約／體驗：<b>${todayAppt.length}</b><br>`+
+    `明日預約／體驗：<b>${tomorrowAppt.length}</b><br>`+
+    `未來預約／體驗：<b>${futureAppt.length}</b><br>`+
+    `已逾期：<b class="${overdue.length?'bad':''}">${overdue.length}</b>`;
+}
+
+function taskTypeLabel(type){
+  const map={
+    overdue:"逾期",
+    todayAppt:"今日預約",
+    tomorrowAppt:"明日預約",
+    futureAppt:"未來預約",
+    todayFollow:"今日跟進",
+    tomorrowFollow:"明日跟進",
+    futureFollow:"未來跟進",
+    pending:"待聯絡",
+    idle3:"超過3天"
+  };
+  return map[type]||"待處理";
+}
+
+function taskTypeClass(type){
+  return type==="overdue"
+    ?"bad"
+    :(["todayAppt","tomorrowAppt","todayFollow","tomorrowFollow"].includes(type)?"warn":"");
+}
+
+function memberNameByRef(ref){
+  const m=members.find(x=>x.ref_code===ref);
+  return m?(m.display_name||m.email||"-"):"-";
+}
+function statusLabel(status){
+  const map={
+    line_clicked:"待聯絡",
+    contacted:"已聯絡",
+    booked:"已預約",
+    experienced:"已體驗",
+    joined:"已加入",
+    closed_won:"已成交",
+    closed_lost:"未成交"
+  };
+  return map[status]||status||"-";
+}
+
+const CRM_STAGE_RANK={
+  line_clicked:0,
+  contacted:1,
+  booked:2,
+  experienced:3,
+  joined:4,
+  closed_won:5
+};
+
+function isClosedStatus(status){
+  return status==="closed_won"||status==="closed_lost";
+}
+
+function canMoveStatus(currentStatus,targetStatus){
+  if(!currentStatus) return true;
+
+  if(isClosedStatus(currentStatus)){
+    return targetStatus===currentStatus;
+  }
+
+  if(targetStatus==="closed_lost"){
+    return true;
+  }
+
+  const currentRank=CRM_STAGE_RANK[currentStatus]??0;
+  const targetRank=CRM_STAGE_RANK[targetStatus];
+
+  if(targetRank===undefined) return false;
+
+  // 不允許退回前一階段；允許往後推進。
+  return targetRank>=currentRank;
+}
+
+function quickStageClass(currentStatus,targetStatus){
+  if(currentStatus===targetStatus) return "quick-current";
+
+  const currentRank=CRM_STAGE_RANK[currentStatus];
+  const targetRank=CRM_STAGE_RANK[targetStatus];
+
+  if(
+    currentRank!==undefined &&
+    targetRank!==undefined &&
+    targetRank<currentRank
+  ){
+    return "quick-past";
+  }
+
+  return "";
+}
+
+function quickStageDisabled(currentStatus,targetStatus){
+  if(currentStatus===targetStatus) return true;
+  return !canMoveStatus(currentStatus,targetStatus);
+}
+
+function applyModalStatusGuard(currentStatus){
+  const select=$("modalStatus");
+  if(!select) return;
+
+  [...select.options].forEach(option=>{
+    const target=option.value;
+    option.disabled=(
+      target!==currentStatus &&
+      !canMoveStatus(currentStatus,target)
+    );
+  });
+}
+
+function taskMatches(lead,key){
+  if(["closed_won","closed_lost"].includes(lead.status)) return false;
+
+  const now=Date.now();
+  const today=dayTW(new Date());
+  const tomorrow=dayTW(new Date(Date.now()+86400000));
+  const nextDay=lead.next_follow_up_at?dayTW(lead.next_follow_up_at):null;
+  const apptDay=lead.appointment_at?dayTW(lead.appointment_at):null;
+
+  if(key==="pending"){
+    return lead.status==="line_clicked"&&!lead.contacted_at;
+  }
+  if(key==="overdue"){
+    return !!lead.next_follow_up_at&&new Date(lead.next_follow_up_at).getTime()<now;
+  }
+
+  if(key==="todayFollow"){
+    return !!nextDay&&nextDay===today;
+  }
+  if(key==="tomorrowFollow"){
+    return !!nextDay&&nextDay===tomorrow;
+  }
+  if(key==="futureFollow"){
+    return !!nextDay&&nextDay>tomorrow;
+  }
+
+  if(key==="todayAppt"){
+    return !!apptDay&&apptDay===today;
+  }
+  if(key==="tomorrowAppt"){
+    return !!apptDay&&apptDay===tomorrow;
+  }
+  if(key==="futureAppt"){
+    return !!apptDay&&apptDay>tomorrow;
+  }
+
+  if(key==="idle3"){
+    const base=lead.last_follow_up_at||lead.updated_at||lead.created_at;
+    return !!base&&(now-new Date(base).getTime())>=3*86400000;
+  }
+  return false;
+}
+function classifyTask(lead){
+  if(["closed_won","closed_lost"].includes(lead.status)) return null;
+
+  if(taskMatches(lead,"overdue")) return "overdue";
+  if(taskMatches(lead,"todayAppt")) return "todayAppt";
+  if(taskMatches(lead,"todayFollow")) return "todayFollow";
+  if(taskMatches(lead,"tomorrowAppt")) return "tomorrowAppt";
+  if(taskMatches(lead,"tomorrowFollow")) return "tomorrowFollow";
+  if(taskMatches(lead,"futureAppt")) return "futureAppt";
+  if(taskMatches(lead,"futureFollow")) return "futureFollow";
+  if(taskMatches(lead,"pending")) return "pending";
+  if(taskMatches(lead,"idle3")) return "idle3";
+
+  return null;
+}
+
+function renderTaskCenter(){
+  const openLeads=leads.filter(x=>!["closed_won","closed_lost"].includes(x.status));
+
+  const labels={
+    all:"全部",
+    pending:"待聯絡",
+    todayFollow:"今日跟進",
+    tomorrowFollow:"明日跟進",
+    futureFollow:"未來跟進",
+    todayAppt:"今日預約",
+    tomorrowAppt:"明日預約",
+    futureAppt:"未來預約",
+    overdue:"逾期",
+    idle3:"超過3天"
+  };
+
+  const keys=[
+    "pending",
+    "todayFollow",
+    "tomorrowFollow",
+    "futureFollow",
+    "todayAppt",
+    "tomorrowAppt",
+    "futureAppt",
+    "overdue",
+    "idle3"
+  ];
+
+  const counts={all:0};
+  keys.forEach(key=>{
+    counts[key]=openLeads.filter(lead=>taskMatches(lead,key)).length;
+  });
+
+  const allTasks=openLeads
+    .map(lead=>({lead,type:classifyTask(lead)}))
+    .filter(x=>x.type);
+
+  counts.all=allTasks.length;
+
+  document.querySelectorAll(".task-filter").forEach(btn=>{
+    const key=btn.dataset.task;
+    btn.textContent=`${labels[key]} ${counts[key]??0}`;
+  });
+
+  let tasks;
+  if(selectedTask==="all"){
+    tasks=allTasks;
+  }else{
+    tasks=openLeads
+      .filter(lead=>taskMatches(lead,selectedTask))
+      .map(lead=>({lead,type:selectedTask}));
+  }
+
+  tasks.sort((a,b)=>{
+    const rank={
+      overdue:1,
+      todayAppt:2,
+      todayFollow:3,
+      tomorrowAppt:4,
+      tomorrowFollow:5,
+      futureAppt:6,
+      futureFollow:7,
+      pending:8,
+      idle3:9
+    };
+
+    if(rank[a.type]!==rank[b.type]) return rank[a.type]-rank[b.type];
+
+    const ta=a.lead.next_follow_up_at||a.lead.appointment_at||a.lead.created_at;
+    const tb=b.lead.next_follow_up_at||b.lead.appointment_at||b.lead.created_at;
+    return new Date(ta)-new Date(tb);
+  });
+
+  $("taskCards").innerHTML=tasks.map(({lead,type})=>`
+    <div class="task-card">
+      <div class="task-card-head">
+        <span class="task-badge ${esc(type)}">${esc(taskTypeLabel(type))}</span>
+        <span class="task-ref">${esc(lead.ref_code||"-")}</span>
+      </div>
+
+      <div class="task-customer">${esc(lead.contact_name||"尚未填姓名")}</div>
+      <div class="task-member">負責會員：${esc(memberNameByRef(lead.ref_code))}</div>
+
+      <div class="task-grid">
+        <div class="task-info">
+          <div class="task-info-label">CRM 狀態</div>
+          <div class="task-info-value">${esc(statusLabel(lead.status))}</div>
+        </div>
+        <div class="task-info">
+          <div class="task-info-label">來源</div>
+          <div class="task-info-value">${esc(sourceOf(lead))}</div>
+        </div>
+        <div class="task-info full">
+          <div class="task-info-label">下次跟進</div>
+          <div class="task-info-value">${dateTW(lead.next_follow_up_at)}</div>
+        </div>
+        <div class="task-info full">
+          <div class="task-info-label">預約／體驗</div>
+          <div class="task-info-value">${dateTW(lead.appointment_at)}</div>
+        </div>
+        <div class="task-info full">
+          <div class="task-info-label">最近更新</div>
+          <div class="task-info-value">${dateTW(lead.updated_at||lead.created_at)}</div>
+        </div>
+      </div>
+
+      <div class="quick-actions">
+        <div class="status-guard-note">
+          目前狀態：<b>${esc(statusLabel(lead.status))}</b>。已完成階段會鎖定，避免誤退回。
+        </div>
+
+        <button
+          class="quick-btn ${quickStageClass(lead.status,"contacted")}"
+          data-quick-status="contacted"
+          data-lead-id="${esc(lead.id)}"
+          ${quickStageDisabled(lead.status,"contacted")?"disabled":""}
+        >✓ 已聯絡</button>
+
+        <button
+          class="quick-btn ${quickStageClass(lead.status,"booked")}"
+          data-quick-status="booked"
+          data-lead-id="${esc(lead.id)}"
+          ${quickStageDisabled(lead.status,"booked")?"disabled":""}
+        >📅 已預約</button>
+
+        <button
+          class="quick-btn ${quickStageClass(lead.status,"experienced")}"
+          data-quick-status="experienced"
+          data-lead-id="${esc(lead.id)}"
+          ${quickStageDisabled(lead.status,"experienced")?"disabled":""}
+        >◎ 已體驗</button>
+
+        <button
+          class="quick-btn ${quickStageClass(lead.status,"joined")}"
+          data-quick-status="joined"
+          data-lead-id="${esc(lead.id)}"
+          ${quickStageDisabled(lead.status,"joined")?"disabled":""}
+        >＋ 已加入</button>
+
+        <button
+          class="quick-btn quick-won ${quickStageClass(lead.status,"closed_won")}"
+          data-quick-status="closed_won"
+          data-lead-id="${esc(lead.id)}"
+          ${quickStageDisabled(lead.status,"closed_won")?"disabled":""}
+        >★ 已成交</button>
+
+        <button
+          class="quick-btn quick-lost"
+          data-quick-status="closed_lost"
+          data-lead-id="${esc(lead.id)}"
+          ${isClosedStatus(lead.status)?"disabled":""}
+        >✕ 未成交</button>
+
+        <button class="quick-btn quick-detail" data-open-lead="${esc(lead.id)}">詳細處理</button>
+
+        <div class="quick-result" data-quick-result="${esc(lead.id)}"></div>
+      </div>
+    </div>
+  `).join("")||`<div class="task-empty">目前這個分類沒有需要處理的名單</div>`;
+}
+
+let activeLeadId=null;
+
+function toInputTime(value){
+  if(!value) return "";
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime())) return "";
+  const pad=n=>String(n).padStart(2,"0");
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function lockViewportForModal(){
+  document.documentElement.style.overflow="hidden";
+  lockViewportForModal();
+}
+function unlockViewportForModal(){
+  document.documentElement.style.overflow="";
+  unlockViewportForModal();
+}
+
+
+async function quickUpdateLeadStatus(id,newStatus,button){
+  const lead=leads.find(x=>x.id===id);
+  if(!lead) return;
+
+  if(!canMoveStatus(lead.status,newStatus) || lead.status===newStatus){
+    alert(`目前是「${statusLabel(lead.status)}」，不可退回或重複設定此階段。`);
+    return;
+  }
+
+  const label=statusLabel(newStatus);
+  const customer=lead.contact_name||"尚未填姓名";
+
+  const confirmText=newStatus==="closed_lost"
+    ? `確定將「${customer}」標記為「未成交」嗎？儲存後會離開待追蹤清單。`
+    : `確定將「${customer}」更新為「${label}」嗎？`;
+
+  if(!confirm(confirmText)) return;
+
+  const resultBox=document.querySelector(`[data-quick-result="${id}"]`);
+  const oldText=button.textContent;
+
+  button.disabled=true;
+  button.textContent="處理中...";
+  if(resultBox){
+    resultBox.textContent="";
+    resultBox.className="quick-result";
+  }
+
+  const {data,error}=await db.rpc("update_lvvip_followup",{
+    p_lead_id:id,
+    p_status:newStatus,
+    p_contact_name:lead.contact_name||"",
+    p_contact_note:lead.contact_note||"",
+    p_next_follow_up_at:lead.next_follow_up_at||null,
+    p_appointment_at:lead.appointment_at||null
+  });
+
+  button.disabled=false;
+  button.textContent=oldText;
+
+  if(error || !data?.ok){
+    if(resultBox){
+      resultBox.textContent="更新失敗："+(error?.message||data?.error||"請確認權限");
+      resultBox.className="quick-result bad";
+    }
+    return;
+  }
+
+  if(resultBox){
+    resultBox.textContent=`✓ 已更新為「${label}」`;
+    resultBox.className="quick-result ok";
+  }
+
+  await loadAll();
+}
+
+function openLeadModal(id){
+  const lead=leads.find(x=>x.id===id);
+  if(!lead) return;
+
+  activeLeadId=id;
+  $("leadModalTitle").textContent=lead.contact_name||"尚未填姓名";
+  $("leadModalSub").textContent=`${memberNameByRef(lead.ref_code)}｜${lead.ref_code||"-"}`;
+  $("leadModalMeta").innerHTML=
+    `來源：<b>${esc(sourceOf(lead))}</b><br>`+
+    `建立時間：${esc(dateTW(lead.created_at))}<br>`+
+    `最近更新：${esc(dateTW(lead.updated_at||lead.created_at))}<br>`+
+    `目前狀態：<b>${esc(statusLabel(lead.status))}</b>`;
+
+  $("modalStatus").value=lead.status||"line_clicked";
+  applyModalStatusGuard(lead.status||"line_clicked");
+  $("modalContactName").value=lead.contact_name||"";
+  $("modalNextFollow").value=toInputTime(lead.next_follow_up_at);
+  $("modalAppointment").value=toInputTime(lead.appointment_at);
+  $("modalNote").value=lead.contact_note||"";
+  $("modalMessage").textContent="";
+  $("modalMessage").className="modal-message";
+
+  $("leadModal").classList.add("show");
+  $("leadModal").setAttribute("aria-hidden","false");
+  document.body.style.overflow="hidden";
+}
+function closeLeadModal(){
+  $("leadModal").classList.remove("show");
+  $("leadModal").setAttribute("aria-hidden","true");
+  document.body.style.overflow="";
+  activeLeadId=null;
+
+  // Android Chrome 某些情況關閉視窗後會保留橫向位移
+  requestAnimationFrame(()=>{
+    window.scrollTo({left:0, top:window.scrollY, behavior:"auto"});
+    document.documentElement.scrollLeft=0;
+    document.body.scrollLeft=0;
+  });
+}
+$("taskCards").addEventListener("click",async event=>{
+  const quickBtn=event.target.closest("[data-quick-status]");
+  if(quickBtn){
+    await quickUpdateLeadStatus(
+      quickBtn.dataset.leadId,
+      quickBtn.dataset.quickStatus,
+      quickBtn
+    );
+    return;
+  }
+
+  const detailBtn=event.target.closest("[data-open-lead]");
+  if(detailBtn){
+    openLeadModal(detailBtn.dataset.openLead);
+  }
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape" && $("leadModal").classList.contains("show")) closeLeadModal();
+});
+
+
+$("closedCards").addEventListener("click",event=>{
+  const btn=event.target.closest("[data-closed-open]");
+  if(!btn) return;
+  openLeadModal(btn.dataset.closedOpen);
+});
+
+$("leadModalClose").addEventListener("click",closeLeadModal);
+$("leadModal").addEventListener("click",event=>{
+  if(event.target===$("leadModal")) closeLeadModal();
+});
+
+$("modalSave").addEventListener("click",async()=>{
+  if(!activeLeadId) return;
+
+  const currentLead=leads.find(x=>x.id===activeLeadId);
+  if(!currentLead) return;
+
+  const requestedStatus=$("modalStatus").value;
+  if(
+    requestedStatus!==currentLead.status &&
+    !canMoveStatus(currentLead.status,requestedStatus)
+  ){
+    $("modalMessage").textContent=
+      `不可從「${statusLabel(currentLead.status)}」退回「${statusLabel(requestedStatus)}」。`;
+    $("modalMessage").className="modal-message bad";
+    return;
+  }
+
+  const button=$("modalSave");
+  const follow=$("modalNextFollow").value;
+  const appointment=$("modalAppointment").value;
+
+  button.disabled=true;
+  button.textContent="儲存中...";
+  $("modalMessage").textContent="";
+  $("modalMessage").className="modal-message";
+
+  const {data,error}=await db.rpc("update_lvvip_followup",{
+    p_lead_id:activeLeadId,
+    p_status:$("modalStatus").value,
+    p_contact_name:$("modalContactName").value.trim(),
+    p_contact_note:$("modalNote").value.trim(),
+    p_next_follow_up_at:follow?new Date(follow).toISOString():null,
+    p_appointment_at:appointment?new Date(appointment).toISOString():null
+  });
+
+  button.disabled=false;
+  button.textContent="儲存處理結果";
+
+  if(error || !data?.ok){
+    $("modalMessage").textContent="儲存失敗："+(error?.message||data?.error||"請確認管理員是否有更新 CRM 的權限");
+    $("modalMessage").className="modal-message bad";
+    return;
+  }
+
+  $("modalMessage").textContent="✓ 已儲存，正在重新整理資料";
+  $("modalMessage").className="modal-message ok";
+
+  await loadAll();
+  const updated=leads.find(x=>x.id===activeLeadId);
+  if(updated){
+    activeLeadId=updated.id;
+    $("leadModalTitle").textContent=updated.contact_name||"尚未填姓名";
+    $("leadModalSub").textContent=`${memberNameByRef(updated.ref_code)}｜${updated.ref_code||"-"}`;
+    $("leadModalMeta").innerHTML=
+      `來源：<b>${esc(sourceOf(updated))}</b><br>`+
+      `建立時間：${esc(dateTW(updated.created_at))}<br>`+
+      `最近更新：${esc(dateTW(updated.updated_at||updated.created_at))}<br>`+
+      `目前狀態：<b>${esc(statusLabel(updated.status))}</b>`;
+  }
+});
+
+
+function closeTimeOf(lead){
+  return lead.status==="closed_won"
+    ? lead.closed_won_at
+    : lead.closed_lost_at;
+}
+
+function closeDurationText(lead){
+  const end=closeTimeOf(lead);
+  if(!lead.created_at||!end) return "-";
+
+  const hours=(new Date(end)-new Date(lead.created_at))/3600000;
+  if(!Number.isFinite(hours)||hours<0) return "-";
+  return hours<48 ? `${hours.toFixed(1)} 小時` : `${(hours/24).toFixed(1)} 天`;
+}
+
+function renderClosedCenter(){
+  const q=($("closedSearch")?.value||"").trim().toLowerCase();
+
+  const closed=leads
+    .filter(lead=>["closed_won","closed_lost"].includes(lead.status))
+    .filter(lead=>inPeriod(closeTimeOf(lead)));
+
+  const won=closed.filter(x=>x.status==="closed_won");
+  const lost=closed.filter(x=>x.status==="closed_lost");
+
+  $("closedTotal").textContent=closed.length;
+  $("closedWon").textContent=won.length;
+  $("closedLost").textContent=lost.length;
+
+  document.querySelectorAll(".closed-filter").forEach(btn=>{
+    const key=btn.dataset.closed;
+    const count=key==="all" ? closed.length : (key==="won" ? won.length : lost.length);
+    const label=key==="all" ? "全部" : (key==="won" ? "已成交" : "未成交");
+    btn.textContent=`${label} ${count}`;
+  });
+
+  let rows=closed.filter(lead=>{
+    if(selectedClosed==="won" && lead.status!=="closed_won") return false;
+    if(selectedClosed==="lost" && lead.status!=="closed_lost") return false;
+
+    if(!q) return true;
+    const hay=[
+      lead.contact_name,
+      lead.ref_code,
+      memberNameByRef(lead.ref_code),
+      lead.source,
+      lead.contact_note
+    ].join(" ").toLowerCase();
+    return hay.includes(q);
+  });
+
+  rows.sort((a,b)=>new Date(closeTimeOf(b)||0)-new Date(closeTimeOf(a)||0));
+
+  $("closedCards").innerHTML=rows.map(lead=>{
+    const won=lead.status==="closed_won";
+    const closeAt=closeTimeOf(lead);
+
+    return `
+      <div class="closed-card">
+        <div class="closed-head">
+          <span class="closed-badge ${won?"won":"lost"}">${won?"★ 已成交":"✕ 未成交"}</span>
+          <span class="closed-ref">${esc(lead.ref_code||"-")}</span>
+        </div>
+
+        <div class="closed-name">${esc(lead.contact_name||"尚未填姓名")}</div>
+        <div class="closed-member">負責會員：${esc(memberNameByRef(lead.ref_code))}</div>
+
+        <div class="closed-grid">
+          <div class="closed-info">
+            <div class="closed-info-label">來源</div>
+            <div class="closed-info-value">${esc(sourceOf(lead))}</div>
+          </div>
+          <div class="closed-info">
+            <div class="closed-info-label">結案結果</div>
+            <div class="closed-info-value">${esc(statusLabel(lead.status))}</div>
+          </div>
+
+          <div class="closed-info full">
+            <div class="closed-info-label">結案時間</div>
+            <div class="closed-info-value">${dateTW(closeAt)}</div>
+          </div>
+
+          <div class="closed-info">
+            <div class="closed-info-label">名單建立</div>
+            <div class="closed-info-value">${dateTW(lead.created_at)}</div>
+          </div>
+          <div class="closed-info">
+            <div class="closed-info-label">處理歷時</div>
+            <div class="closed-info-value">${closeDurationText(lead)}</div>
+          </div>
+
+          <div class="closed-info full">
+            <div class="closed-info-label">備註</div>
+            <div class="closed-info-value">${esc(lead.contact_note||"—")}</div>
+          </div>
+        </div>
+
+        <button class="closed-detail" data-closed-open="${esc(lead.id)}">查看完整紀錄</button>
+      </div>
+    `;
+  }).join("")||`<div class="closed-empty">目前這個條件沒有已結案紀錄</div>`;
+}
+
+function renderMembers(){const map=new Map(members.map(m=>[m.ref_code,{m,views:0,clicks:0,leads:0,wins:0}]));for(const e of events){const x=map.get(e.ref);if(!x)continue;if(e.event==="page_view")x.views++;if(e.event==="line_click")x.clicks++}for(const l of leads){const x=map.get(l.ref_code);if(!x)continue;if(inPeriod(l.created_at))x.leads++;if(inPeriod(l.closed_won_at))x.wins++}const rows=[...map.values()].sort((a,b)=>b.wins-a.wins||b.leads-a.leads||b.clicks-a.clicks||b.views-a.views);$("memberRows").innerHTML=rows.map((x,i)=>`<tr><td class="rank">${i+1}</td><td>${esc(x.m.display_name||x.m.email||"-")}</td><td>${esc(x.m.ref_code)}</td><td>${x.views}</td><td>${x.clicks}</td><td>${x.leads}</td><td>${x.wins}</td><td>${pct(x.wins,x.leads)}</td></tr>`).join("")||`<tr><td colspan="8" class="muted">沒有資料</td></tr>`}
+function renderSources(){const map=new Map(),get=s=>{if(!map.has(s))map.set(s,{source:s,views:0,clicks:0,lineVisitors:new Set(),leads:0,wins:0});return map.get(s)};for(const e of events){const x=get(sourceOf(e));if(e.event==="page_view")x.views++;if(e.event==="line_click"){x.clicks++;if(e.visitor_id)x.lineVisitors.add(e.visitor_id)}}for(const l of leads){const x=get(sourceOf(l));if(inPeriod(l.created_at))x.leads++;if(inPeriod(l.closed_won_at))x.wins++}const rows=[...map.values()].sort((a,b)=>b.leads-a.leads||b.views-a.views);$("sourceRows").innerHTML=rows.map(x=>`<tr><td>${esc(x.source)}</td><td>${x.views}</td><td>${x.lineVisitors.size}</td><td>${x.clicks}</td><td>${x.leads}</td><td>${x.wins}</td></tr>`).join("")||`<tr><td colspan="6" class="muted">沒有資料</td></tr>`}
+function renderDaily(){const map=new Map(),get=d=>{if(!map.has(d))map.set(d,{day:d,views:0,clicks:0,lineVisitors:new Set(),leads:0,wins:0});return map.get(d)};for(const e of events){const x=get(dayTW(e.created_at));if(e.event==="page_view")x.views++;if(e.event==="line_click"){x.clicks++;if(e.visitor_id)x.lineVisitors.add(e.visitor_id)}}for(const l of leads){if(inPeriod(l.created_at))get(dayTW(l.created_at)).leads++;if(inPeriod(l.closed_won_at))get(dayTW(l.closed_won_at)).wins++}const rows=[...map.values()].sort((a,b)=>b.day.localeCompare(a.day)).slice(0,31);$("dailyRows").innerHTML=rows.map(x=>`<tr><td>${x.day}</td><td>${x.views}</td><td>${x.lineVisitors.size}</td><td>${x.clicks}</td><td>${x.leads}</td><td>${x.wins}</td></tr>`).join("")||`<tr><td colspan="6" class="muted">沒有資料</td></tr>`}
+function renderAllMembers(){const pub=new Map(publicRows.map(x=>[x.member_id,x]));$("allMembersRows").innerHTML=members.slice().sort((a,b)=>(a.ref_code||"").localeCompare(b.ref_code||"")).map(m=>{const p=pub.get(m.id);return `<tr><td>${esc(m.display_name||"-")}</td><td>${esc(m.ref_code||"-")}</td><td class="${m.active?'good':'bad'}">${m.active?'啟用':'停用'}</td><td class="${p?.line_url?'good':'warn'}">${p?.line_url?'已設定':'未設定'}</td><td>${esc(m.email||"-")}</td><td>${dateTW(m.created_at)}</td></tr>`}).join("")||`<tr><td colspan="6" class="muted">沒有資料</td></tr>`}
+$("loginForm").addEventListener("submit",async e=>{e.preventDefault();const b=$("loginButton");b.disabled=true;b.textContent="登入中...";$("loginError").textContent="";const{data,error}=await db.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});b.disabled=false;b.textContent="登入總管理後台";if(error||!data.user){$("loginError").textContent="登入失敗，請確認 Email 或密碼。";return}await startDashboard()});
+$("logoutBtn").addEventListener("click",async()=>{await db.auth.signOut();location.reload()});$("refreshBtn").addEventListener("click",loadAll);
+document.querySelectorAll(".filter[data-days]").forEach(btn=>btn.addEventListener("click",async()=>{
+  document.querySelectorAll(".filter[data-days]").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  selectedDays=btn.dataset.days==="all"?"all":Number(btn.dataset.days);
+  await loadAll();
+}));
+document.querySelectorAll(".task-filter").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".task-filter").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  selectedTask=btn.dataset.task;
+  renderTaskCenter();
+}));
+
+
+document.querySelectorAll(".closed-filter").forEach(btn=>btn.addEventListener("click",()=>{
+  document.querySelectorAll(".closed-filter").forEach(x=>x.classList.remove("active"));
+  btn.classList.add("active");
+  selectedClosed=btn.dataset.closed;
+  renderClosedCenter();
+}));
+
+$("closedSearch").addEventListener("input",renderClosedCenter);
+
+
+function resetHorizontalViewport(){
+  if(window.scrollX!==0){
+    window.scrollTo({left:0, top:window.scrollY, behavior:"auto"});
+  }
+  document.documentElement.scrollLeft=0;
+  document.body.scrollLeft=0;
+}
+
+window.addEventListener("resize",()=>requestAnimationFrame(resetHorizontalViewport));
+window.addEventListener("orientationchange",()=>setTimeout(resetHorizontalViewport,120));
+
+(async()=>{const{data:{session}}=await db.auth.getSession();if(session)await startDashboard()})();
+</script>
+
+</body></html>
