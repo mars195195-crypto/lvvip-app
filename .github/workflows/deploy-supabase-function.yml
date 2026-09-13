@@ -1,0 +1,40 @@
+name: Deploy Supabase Admin Function
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - admin-members-index.ts
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: rwtbrjhgpufmkcdltjge
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Prepare function
+        run: |
+          mkdir -p supabase/functions/admin-members
+          cp admin-members-index.ts supabase/functions/admin-members/index.ts
+
+      - name: Deploy admin-members
+        run: |
+          supabase functions deploy admin-members \
+            --project-ref "$SUPABASE_PROJECT_ID" \
+            --use-api
