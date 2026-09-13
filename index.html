@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta name="description" content="L-VVIP 全球輕資產事業｜從自己開始，連結市場，持續累積。">
+<title>L-VVIP｜全球輕資產事業</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(180deg,#06111f 0%,#0a1a29 100%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif}
+.wrap{width:min(100%,760px);margin:0 auto;padding:calc(18px + env(safe-area-inset-top)) 18px calc(40px + env(safe-area-inset-bottom))}
+.brand{color:#f1cf72;font-weight:900;letter-spacing:.5px;font-size:18px;margin-bottom:26px}
+.hero,.section{border-radius:22px;border:1px solid rgba(255,255,255,.08)}
+.hero{padding:28px 22px;background:linear-gradient(145deg,rgba(241,207,114,.16),rgba(255,255,255,.04));border-color:rgba(241,207,114,.22)}
+.eyebrow{color:#f1cf72;font-size:14px;font-weight:800;margin-bottom:8px}
+h1{margin:0;font-size:38px;line-height:1.2;letter-spacing:-1px}
+.hero p,.section p{color:#cbd5dd;line-height:1.9}
+.hero p{margin:18px 0 0;font-size:17px}
+.cta{display:block;width:100%;margin-top:22px;padding:17px 16px;border:0;border-radius:14px;background:linear-gradient(90deg,#edc75d,#ffe79a);color:#14202a;font-weight:900;font-size:18px;text-align:center}
+.cta.secondary{margin-top:10px;background:#15344d;color:#fff}
+.section{margin-top:18px;padding:22px;background:rgba(255,255,255,.05)}
+.section h2{margin:0 0 14px;font-size:24px}
+.section p{margin:0}
+.grid,.steps{display:grid;gap:12px;margin-top:14px}
+.item,.step{padding:17px;border-radius:15px;background:#0c2030;border:1px solid rgba(255,255,255,.07)}
+.item b,.step b{display:block;margin-bottom:6px}
+.item b{color:#f1cf72;font-size:17px}
+.item span,.step span{color:#b8c5ce;line-height:1.75}
+.step{position:relative;padding-left:58px;counter-increment:step}
+.steps{counter-reset:step}
+.step:before{content:counter(step);position:absolute;left:16px;top:16px;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#f1cf72;color:#14202a;font-weight:900}
+.quote{font-size:22px;font-weight:900;line-height:1.55}
+.quote small{display:block;margin-top:10px;color:#f1cf72;font-size:14px}
+.refbox{margin-top:14px;padding:13px;border-radius:12px;background:#071724;color:#9fb0bc;font-size:13px;word-break:break-all}
+.notice{margin-top:20px;color:#7f919e;font-size:12px;line-height:1.8;text-align:center}
+.sticky{position:sticky;bottom:0;z-index:50;margin-top:18px;padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(6,17,31,0),rgba(6,17,31,.96) 28%)}
+.status{display:none;margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.06);color:#cbd5dc;font-size:13px;text-align:center}
+@media(min-width:620px){.grid{grid-template-columns:repeat(2,1fr)}h1{font-size:48px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="brand">L-VVIP</div>
+
+<section class="hero">
+<div class="eyebrow">全球輕資產事業</div>
+<h1>先讓自己開始，<br>再讓市場慢慢累積。</h1>
+<p>不一定要先有店面、庫存或龐大固定成本。<br>從一支手機、一個位置、一次分享開始，持續連結真正需要產品、服務與新機會的人。</p>
+<button id="lineTop" class="cta">加入 LINE｜免費了解</button>
+<button id="learnMore" class="cta secondary">先看 60 秒重點</button>
+<div id="statusTop" class="status"></div>
+</section>
+
+<section id="intro" class="section">
+<h2>為什麼先從 L-VVIP 開始？</h2>
+<p>市場可以慢慢建立，但自己的事業要先有一個起點。先取得自己的序號與位置，再開始學習分享、服務、導客與跟進，讓每一次累積都回到自己的市場。</p>
+<div class="grid">
+<div class="item"><b>小資產啟動</b><span>降低傳統創業前期固定成本，先從可執行的第一步開始。</span></div>
+<div class="item"><b>大市場連結</b><span>透過社群與網路，讓市場不再只限於原本認識的人。</span></div>
+<div class="item"><b>每日持續累積</b><span>分享、服務、跟進，每天一點點，逐步累積自己的顧客與市場。</span></div>
+<div class="item"><b>從自己開始</b><span>先有自己的推薦碼與位置，再把每一個新連結累積到自己的系統。</span></div>
+</div>
+</section>
+
+<section class="section">
+<h2>簡單四步開始</h2>
+<div class="steps">
+<div class="step"><b>先了解</b><span>先看懂產品、服務與整個 L-VVIP 運作方式。</span></div>
+<div class="step"><b>再體驗</b><span>先從自己的實際理解與使用經驗建立信任。</span></div>
+<div class="step"><b>開始分享</b><span>用平台提供的工具，把有價值的內容分享給真正有需要的人。</span></div>
+<div class="step"><b>持續跟進</b><span>不是一次推銷，而是持續提供資訊、服務與協助。</span></div>
+</div>
+</section>
+
+<section class="section">
+<div class="quote">「不用一次做很多，<br>但要讓自己的市場每天都有往前一步。」<small>L-VVIP｜小資產啟動 × 大市場連結 × 全球循環</small></div>
+<div id="refBox" class="refbox"></div>
+</section>
+
+<div class="sticky">
+<button id="lineBottom" class="cta">我想了解 L-VVIP</button>
+<div id="statusBottom" class="status"></div>
+</div>
+
+<div class="notice">本頁提供資訊與事業模式介紹，不代表任何收益保證。<br>實際結果會依個人投入、執行方式、市場條件與其他因素而不同。</div>
+</div>
+
+<script>
+const SUPABASE_URL = "https://rwtbrjhgpufmkcdltjge.supabase.co";
+const SUPABASE_KEY = "sb_publishable_j7YAOitklhJeq79wu5N0sQ_xRuo_jfI";
+const LINE_URL = "https://lin.ee/請換成你的LINE網址";
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const params = new URLSearchParams(window.location.search);
+
+const ref = cleanParam(params.get("ref"));
+const from = cleanParam(params.get("from"));
+const utmSource = cleanParam(params.get("utm_source"));
+const utmMedium = cleanParam(params.get("utm_medium"));
+const utmCampaign = cleanParam(params.get("utm_campaign"));
+
+const VISITOR_KEY = "lvvip_visitor_id";
+let visitorId = localStorage.getItem(VISITOR_KEY);
+
+if (!visitorId) {
+  visitorId = (window.crypto && crypto.randomUUID)
+    ? crypto.randomUUID()
+    : "v_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+  localStorage.setItem(VISITOR_KEY, visitorId);
+}
+
+const source = from || utmSource || detectReferrer() || "direct";
+
+document.getElementById("refBox").textContent =
+  ref ? `推薦碼：${ref}` : "目前為一般瀏覽，尚未帶入推薦碼。";
+
+trackEvent("page_view");
+
+document.getElementById("learnMore").addEventListener("click", async () => {
+  await trackEvent("video_click");
+  document.getElementById("intro").scrollIntoView({behavior:"smooth"});
+});
+
+document.getElementById("lineTop").addEventListener("click", () => handleLineClick("statusTop"));
+document.getElementById("lineBottom").addEventListener("click", () => handleLineClick("statusBottom"));
+
+async function handleLineClick(statusId) {
+  const status = document.getElementById(statusId);
+  status.style.display = "block";
+  status.textContent = "正在記錄你的諮詢來源…";
+  await trackEvent("line_click");
+
+  if (!LINE_URL || LINE_URL.includes("請換成")) {
+    status.textContent = "LINE 官方帳號網址尚未設定，請聯絡分享此頁給你的會員。";
+    return;
+  }
+
+  status.textContent = "即將開啟 LINE…";
+  setTimeout(() => { window.location.href = LINE_URL; }, 250);
+}
+
+async function trackEvent(eventName) {
+  const { error } = await db.from("lvvip_events").insert({
+    event: eventName,
+    visitor_id: visitorId,
+    source: source,
+    ref: ref || null,
+    utm_source: utmSource || null,
+    utm_medium: utmMedium || null,
+    utm_campaign: utmCampaign || null,
+    page_path: window.location.pathname + window.location.search
+  });
+
+  if (error) console.error("L-VVIP tracking error:", error);
+}
+
+function detectReferrer() {
+  if (!document.referrer) return "";
+  try {
+    const host = new URL(document.referrer).hostname.toLowerCase();
+    if (host.includes("facebook")) return "facebook";
+    if (host.includes("instagram")) return "instagram";
+    if (host.includes("tiktok")) return "tiktok";
+    if (host.includes("youtube")) return "youtube";
+    if (host.includes("threads")) return "threads";
+    if (host.includes("line")) return "line";
+    return host;
+  } catch {
+    return "";
+  }
+}
+
+function cleanParam(value) {
+  if (!value) return "";
+  return String(value).trim().slice(0,120);
+}
+</script>
+</body>
+</html>
