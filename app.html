@@ -1,0 +1,5586 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+>
+
+<meta
+    name="theme-color"
+    content="#07111f"
+>
+
+<title>
+L-VVIP 會員工作台
+</title>
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+</script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        linear-gradient(
+            180deg,
+            #06111f 0%,
+            #0a1a29 100%
+        );
+    color: #ffffff;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        "Noto Sans TC",
+        "Microsoft JhengHei",
+        sans-serif;
+    padding-bottom:
+        calc(
+            82px +
+            env(
+                safe-area-inset-bottom
+            )
+        );
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+
+/* ==================================================
+LOGIN
+================================================== */
+
+.login-page {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+}
+
+.login-card {
+    width: min(100%, 430px);
+    padding: 30px;
+    border-radius: 22px;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .06
+        );
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .1
+        );
+}
+
+.login-logo {
+    color: #f1cf72;
+    font-size: 31px;
+    font-weight: 900;
+}
+
+.login-title {
+    margin: 7px 0;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.login-sub {
+    color: #9eacb9;
+    line-height: 1.7;
+    margin-bottom: 24px;
+}
+
+.field {
+    margin-bottom: 14px;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 6px;
+    color: #bdc7cf;
+}
+
+.field input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 11px;
+    border:
+        1px solid #31495d;
+    background: #071724;
+    color: #ffffff;
+    outline: none;
+}
+
+.primary-button {
+    width: 100%;
+    border: 0;
+    border-radius: 12px;
+    padding: 15px;
+    background:
+        linear-gradient(
+            90deg,
+            #edc75d,
+            #ffe79a
+        );
+    color: #13202a;
+    font-weight: 900;
+}
+
+.login-error {
+    min-height: 22px;
+    margin-top: 12px;
+    color: #ffaaaa;
+}
+
+
+/* ==================================================
+APP
+================================================== */
+
+.app {
+    width: min(100%, 860px);
+    margin: 0 auto;
+    padding:
+        calc(
+            16px +
+            env(
+                safe-area-inset-top
+            )
+        )
+        15px
+        30px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.brand {
+    color: #f1cf72;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.page-title {
+    margin-top: 3px;
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.member-name {
+    margin-top: 3px;
+    color: #95a7b5;
+    font-size: 13px;
+}
+
+.refresh-button {
+    border:
+        1px solid #3d566a;
+    background: transparent;
+    color: #ffffff;
+    border-radius: 9px;
+    padding: 8px 11px;
+}
+
+
+/* ==================================================
+PAGE
+================================================== */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+
+/* ==================================================
+CARDS
+================================================== */
+
+.hero-card {
+    border-radius: 20px;
+    padding: 22px;
+    margin-bottom: 14px;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(
+                241,
+                207,
+                114,
+                .16
+            ),
+            rgba(
+                255,
+                255,
+                255,
+                .035
+            )
+        );
+    border:
+        1px solid
+        rgba(
+            241,
+            207,
+            114,
+            .2
+        );
+}
+
+.hero-small {
+    color: #aebbc5;
+    font-size: 13px;
+}
+
+.hero-title {
+    margin: 5px 0 8px;
+    font-size: 27px;
+    font-weight: 900;
+    line-height: 1.35;
+}
+
+.hero-text {
+    color: #d0d8df;
+    line-height: 1.8;
+}
+
+.card {
+    padding: 18px;
+    margin-bottom: 13px;
+    border-radius: 17px;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .05
+        );
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
+}
+
+.card-title {
+    font-size: 19px;
+    font-weight: 900;
+    margin-bottom: 13px;
+}
+
+
+/* ==================================================
+STATS
+================================================== */
+
+.stats {
+    display: grid;
+    grid-template-columns:
+        repeat(
+            2,
+            1fr
+        );
+    gap: 10px;
+    margin-bottom: 13px;
+}
+
+.stat {
+    padding: 16px;
+    border-radius: 15px;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .055
+        );
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
+}
+
+.stat-label {
+    color: #96a7b4;
+    font-size: 12px;
+}
+
+.stat-number {
+    margin-top: 4px;
+    font-size: 30px;
+    font-weight: 900;
+}
+
+.stat-small {
+    margin-top: 3px;
+    color: #e7ce7c;
+    font-size: 12px;
+}
+
+
+/* ==================================================
+QUICK
+================================================== */
+
+.quick-grid {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap: 9px;
+}
+
+.quick-button {
+    padding: 15px 10px;
+    border: 0;
+    border-radius: 12px;
+    background: #143149;
+    color: #ffffff;
+    font-weight: 800;
+    text-align: center;
+}
+
+.quick-button.gold {
+    background: #f1cf72;
+    color: #13202a;
+}
+
+.quick-button.green {
+    background: #06c755;
+}
+
+.quick-button.red {
+    background: #74383c;
+}
+
+
+/* ==================================================
+SHARE
+================================================== */
+
+.share-hook {
+    color: #f1d78c;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1.7;
+    margin: 12px 0;
+}
+
+.share-body {
+    white-space: pre-line;
+    color: #d2dae0;
+    line-height: 1.9;
+}
+
+.share-cta {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 10px;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .05
+        );
+    font-weight: 800;
+}
+
+.share-url {
+    margin-top: 14px;
+    padding: 11px;
+    border-radius: 9px;
+    background: #071724;
+    color: #b7c5cf;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+.share-grid {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.share-button {
+    border: 0;
+    border-radius: 10px;
+    padding: 13px 8px;
+    background: #18354d;
+    color: #ffffff;
+    font-weight: 900;
+}
+
+.share-button.main {
+    grid-column:
+        1 / -1;
+    background: #f1cf72;
+    color: #13202a;
+    font-size: 16px;
+}
+
+.share-button.line {
+    background: #06c755;
+}
+
+
+/* ==================================================
+LEADS
+================================================== */
+
+.filter-row {
+    display: flex;
+    gap: 7px;
+    overflow-x: auto;
+    margin-bottom: 13px;
+    padding-bottom: 4px;
+}
+
+.filter-button {
+    border: 0;
+    border-radius: 99px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    background: #122b3e;
+    color: #d4dde4;
+}
+
+.filter-button.active {
+    background: #f1cf72;
+    color: #13202a;
+    font-weight: 900;
+}
+
+.lead-card {
+    padding: 17px;
+    margin-bottom: 11px;
+    border-radius: 16px;
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            .05
+        );
+    border:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .08
+        );
+}
+
+.lead-card.overdue {
+    border-color:
+        rgba(
+            255,
+            105,
+            105,
+            .45
+        );
+}
+
+.lead-head {
+    display: flex;
+    justify-content:
+        space-between;
+    align-items:
+        flex-start;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.lead-name {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.lead-meta {
+    margin-top: 3px;
+    color: #8fa1af;
+    font-size: 12px;
+}
+
+.badge {
+    padding: 5px 8px;
+    border-radius: 99px;
+    background: #17344b;
+    color: #c8d6df;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.badge.red {
+    background:
+        rgba(
+            255,
+            100,
+            100,
+            .15
+        );
+    color: #ffaaaa;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns:
+        1fr 1fr;
+    gap: 9px;
+}
+
+.form-grid .full {
+    grid-column:
+        1 / -1;
+}
+
+.form-group label {
+    display: block;
+    color: #9eacb8;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    border:
+        1px solid #31495d;
+    border-radius: 9px;
+    padding: 10px;
+    background: #071724;
+    color: #ffffff;
+}
+
+.form-group textarea {
+    min-height: 78px;
+    resize: vertical;
+}
+
+.save-button {
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 12px;
+    margin-top: 11px;
+    background: #f1cf72;
+    color: #13202a;
+    font-weight: 900;
+}
+
+
+/* ==================================================
+TASKS
+================================================== */
+
+.task-line {
+    display: flex;
+    justify-content:
+        space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .07
+        );
+}
+
+.task-line:last-child {
+    border-bottom: 0;
+}
+
+.task-title {
+    font-weight: 800;
+}
+
+.task-sub {
+    margin-top: 3px;
+    color: #8fa0ad;
+    font-size: 12px;
+}
+
+.task-status {
+    font-weight: 900;
+}
+
+.task-status.red {
+    color: #ff9a9a;
+}
+
+.task-status.gold {
+    color: #f1cf72;
+}
+
+.task-status.green {
+    color: #7be4a6;
+}
+
+
+/* ==================================================
+PROFILE
+================================================== */
+
+.profile-row {
+    display: flex;
+    justify-content:
+        space-between;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .07
+        );
+}
+
+.profile-row:last-child {
+    border-bottom: 0;
+}
+
+.profile-label {
+    color: #93a3af;
+}
+
+.profile-value {
+    font-weight: 800;
+    text-align: right;
+    word-break: break-all;
+}
+
+.line-connected {
+    color: #70e19e;
+}
+
+.line-off {
+    color: #f1cf72;
+}
+
+.bind-code {
+    padding: 17px;
+    margin-top: 12px;
+    border-radius: 12px;
+    background: #071724;
+    color: #f1cf72;
+    text-align: center;
+    letter-spacing: 4px;
+    font-size: 28px;
+    font-weight: 900;
+}
+
+
+/* ==================================================
+LOADING
+================================================== */
+
+.loading {
+    padding: 30px;
+    text-align: center;
+    color: #91a2af;
+}
+
+.empty {
+    padding: 25px;
+    text-align: center;
+    color: #8394a0;
+}
+
+
+/* ==================================================
+BOTTOM NAV
+================================================== */
+
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 9999;
+    background:
+        rgba(
+            5,
+            15,
+            24,
+            .96
+        );
+    backdrop-filter:
+        blur(
+            14px
+        );
+    border-top:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .09
+        );
+    padding-bottom:
+        env(
+            safe-area-inset-bottom
+        );
+}
+
+.bottom-inner {
+    width: min(100%, 860px);
+    margin: auto;
+    display: grid;
+    grid-template-columns:
+        repeat(
+            5,
+            1fr
+        );
+}
+
+.nav-button {
+    position: relative;
+    border: 0;
+    background: transparent;
+    color: #8495a2;
+    padding:
+        10px 3px
+        9px;
+    font-size: 11px;
+}
+
+.nav-icon {
+    display: block;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-bottom: 2px;
+}
+
+.nav-button.active {
+    color: #f1cf72;
+    font-weight: 900;
+}
+
+.nav-badge {
+    position: absolute;
+    top: 5px;
+    right: calc(50% - 24px);
+    min-width: 17px;
+    height: 17px;
+    padding:
+        0 4px;
+    border-radius: 99px;
+    background: #e25259;
+    color: white;
+    font-size: 10px;
+    line-height: 17px;
+    text-align: center;
+    display: none;
+}
+
+
+/* ==================================================
+DESKTOP
+================================================== */
+
+@media(
+    min-width: 650px
+) {
+
+    .stats {
+        grid-template-columns:
+            repeat(
+                4,
+                1fr
+            );
+    }
+
+    .quick-grid {
+        grid-template-columns:
+            repeat(
+                4,
+                1fr
+            );
+    }
+
+}
+
+
+@media(
+    max-width: 550px
+) {
+
+    .form-grid {
+        grid-template-columns:
+            1fr;
+    }
+
+    .form-grid .full {
+        grid-column:
+            auto;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==================================================
+LOGIN
+================================================== -->
+
+<div
+    id="loginPage"
+    class="login-page"
+>
+
+<div class="login-card">
+
+<div class="login-logo">
+L-VVIP
+</div>
+
+<div class="login-title">
+會員工作台
+</div>
+
+<div class="login-sub">
+登入一次，就可以完成分享、查看客戶、安排跟進與管理自己的導客系統。
+</div>
+
+<form id="loginForm">
+
+<div class="field">
+
+<label>
+Email
+</label>
+
+<input
+    id="loginEmail"
+    type="email"
+    autocomplete="username"
+    required
+>
+
+</div>
+
+<div class="field">
+
+<label>
+密碼
+</label>
+
+<input
+    id="loginPassword"
+    type="password"
+    autocomplete="current-password"
+    required
+>
+
+</div>
+
+<button
+    id="loginButton"
+    class="primary-button"
+    type="submit"
+>
+登入會員工作台
+</button>
+
+<div
+    id="loginError"
+    class="login-error"
+></div>
+
+</form>
+
+</div>
+
+</div>
+
+
+<!-- ==================================================
+APP
+================================================== -->
+
+<div
+    id="app"
+    class="app hidden"
+>
+
+<div class="topbar">
+
+<div>
+
+<div class="brand">
+L-VVIP
+</div>
+
+<div
+    id="pageTitle"
+    class="page-title"
+>
+會員首頁
+</div>
+
+<div
+    id="memberHeader"
+    class="member-name"
+></div>
+
+</div>
+
+<button
+    id="refreshButton"
+    class="refresh-button"
+>
+重新整理
+</button>
+
+</div>
+
+
+<div
+    id="globalLoading"
+    class="loading"
+>
+載入會員工作台中...
+</div>
+
+
+<div
+    id="appContent"
+    class="hidden"
+>
+
+
+<!-- ==================================================
+首頁
+================================================== -->
+
+<section
+    id="page-home"
+    class="page active"
+>
+
+<div class="hero-card">
+
+<div class="hero-small">
+今天的 L-VVIP
+</div>
+
+<div class="hero-title">
+先完成今天最重要的一步
+</div>
+
+<div class="hero-text">
+每天持續分享、持續服務、持續跟進。<br>
+不用一次做很多，但要讓自己的市場每天都有往前一步。
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-label">
+7天導客
+</div>
+
+<div
+    id="homeViews"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+LINE 名單
+</div>
+
+<div
+    id="homeLeads"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+今日待辦
+</div>
+
+<div
+    id="homeTasks"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+已成交
+</div>
+
+<div
+    id="homeWins"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+今天要做什麼？
+</div>
+
+<div class="quick-grid">
+
+<button
+    class="quick-button gold"
+    data-go="share"
+>
+📤 今日分享
+</button>
+
+<button
+    class="quick-button"
+    data-go="followup"
+>
+✅ 今日待辦
+</button>
+
+<button
+    class="quick-button"
+    data-go="customers"
+>
+👥 客戶名單
+</button>
+
+<button
+    class="quick-button green"
+    data-go="profile"
+>
+🔗 我的網址
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+今天的提醒
+</div>
+
+<div id="homeReminder"></div>
+
+</div>
+
+</section>
+
+
+<!-- ==================================================
+分享
+================================================== -->
+
+<section
+    id="page-share"
+    class="page"
+>
+
+<div class="hero-card">
+
+<div
+    id="shareDate"
+    class="hero-small"
+></div>
+
+<div
+    id="shareTitle"
+    class="hero-title"
+></div>
+
+<div
+    id="shareHook"
+    class="share-hook"
+></div>
+
+<div
+    id="shareBody"
+    class="share-body"
+></div>
+
+<div
+    id="shareCta"
+    class="share-cta"
+></div>
+
+<div
+    id="shareUrl"
+    class="share-url"
+></div>
+
+
+<div class="share-grid">
+
+<button
+    id="nativeShare"
+    class="share-button main"
+>
+📤 一鍵分享
+</button>
+
+<button
+    id="lineShare"
+    class="share-button line"
+>
+LINE
+</button>
+
+<button
+    class="share-button"
+    data-copy-platform="facebook"
+>
+Facebook
+</button>
+
+<button
+    class="share-button"
+    data-copy-platform="threads"
+>
+Threads
+</button>
+
+<button
+    class="share-button"
+    data-copy-platform="tiktok"
+>
+TikTok
+</button>
+
+<button
+    class="share-button"
+    data-copy-platform="youtube"
+>
+YouTube
+</button>
+
+</div>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-label">
+今天分享
+</div>
+
+<div
+    id="shareToday"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+7天分享
+</div>
+
+<div
+    id="shareWeek"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+累積分享
+</div>
+
+<div
+    id="shareAll"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+7天導客
+</div>
+
+<div
+    id="shareViews"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ==================================================
+客戶
+================================================== -->
+
+<section
+    id="page-customers"
+    class="page"
+>
+
+<div class="filter-row">
+
+<button
+    class="filter-button active"
+    data-lead-filter="all"
+>
+全部
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="line_clicked"
+>
+待聯絡
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="contacted"
+>
+已聯絡
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="booked"
+>
+已預約
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="experienced"
+>
+已體驗
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="joined"
+>
+已加入
+</button>
+
+<button
+    class="filter-button"
+    data-lead-filter="closed_won"
+>
+已成交
+</button>
+
+</div>
+
+<div id="customerList"></div>
+
+</section>
+
+
+<!-- ==================================================
+待辦
+================================================== -->
+
+<section
+    id="page-followup"
+    class="page"
+>
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-label">
+今天
+</div>
+
+<div
+    id="taskToday"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+逾期
+</div>
+
+<div
+    id="taskOverdue"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+3天沒跟進
+</div>
+
+<div
+    id="taskStale"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div class="stat-label">
+7天內預約
+</div>
+
+<div
+    id="taskAppointment"
+    class="stat-number"
+>
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="filter-row">
+
+<button
+    class="filter-button active"
+    data-task-filter="today"
+>
+今天
+</button>
+
+<button
+    class="filter-button"
+    data-task-filter="overdue"
+>
+逾期
+</button>
+
+<button
+    class="filter-button"
+    data-task-filter="stale"
+>
+3天未跟進
+</button>
+
+<button
+    class="filter-button"
+    data-task-filter="appointment"
+>
+近期預約
+</button>
+
+<button
+    class="filter-button"
+    data-task-filter="all"
+>
+全部
+</button>
+
+</div>
+
+<div id="taskList"></div>
+
+</section>
+
+
+<!-- ==================================================
+我的
+================================================== -->
+
+<section
+    id="page-profile"
+    class="page"
+>
+
+<div class="card">
+
+<div class="card-title">
+我的會員資料
+</div>
+
+<div class="profile-row">
+
+<div class="profile-label">
+會員名稱
+</div>
+
+<div
+    id="profileName"
+    class="profile-value"
+>
+-
+</div>
+
+</div>
+
+
+<div class="profile-row">
+
+<div class="profile-label">
+推薦碼
+</div>
+
+<div
+    id="profileRef"
+    class="profile-value"
+>
+-
+</div>
+
+</div>
+
+
+<div class="profile-row">
+
+<div class="profile-label">
+Email
+</div>
+
+<div
+    id="profileEmail"
+    class="profile-value"
+>
+-
+</div>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+我的專屬導客網址
+</div>
+
+<div
+    id="profileUrl"
+    class="share-url"
+></div>
+
+<button
+    id="copyProfileUrl"
+    class="primary-button"
+    style="margin-top:12px;"
+>
+複製我的導客網址
+</button>
+
+</div>
+
+
+<div class="card">
+
+<div class="card-title">
+LINE 自動提醒
+</div>
+
+<div class="profile-row">
+
+<div class="profile-label">
+LINE 狀態
+</div>
+
+<div
+    id="lineStatus"
+    class="profile-value"
+>
+-
+</div>
+
+</div>
+
+
+<div
+    id="lineBindPanel"
+>
+
+<button
+    id="generateBindCode"
+    class="primary-button"
+    style="margin-top:12px;"
+>
+產生 LINE 綁定碼
+</button>
+
+
+<div
+    id="bindCodePanel"
+    class="hidden"
+>
+
+<div
+    id="bindCode"
+    class="bind-code"
+></div>
+
+<div
+    style="
+        text-align:center;
+        color:#91a2af;
+        font-size:12px;
+    "
+>
+10 分鐘內有效
+</div>
+
+<button
+    id="copyBindCode"
+    class="quick-button"
+    style="
+        width:100%;
+        margin-top:10px;
+    "
+>
+複製綁定碼
+</button>
+
+<a
+    id="lineAddLink"
+    href="#"
+    target="_blank"
+    style="
+        text-decoration:none;
+    "
+>
+
+<button
+    class="quick-button green"
+    style="
+        width:100%;
+        margin-top:8px;
+    "
+>
+開啟 LINE 官方帳號
+</button>
+
+</a>
+
+</div>
+
+</div>
+
+
+<div
+    id="lineLinkedPanel"
+    class="hidden"
+>
+
+<div
+    style="
+        margin-top:12px;
+        color:#76e5a3;
+        line-height:1.8;
+    "
+>
+✓ 已完成 LINE 綁定。<br><br>
+每天有待辦時，系統就可以透過 LINE 提醒你。
+</div>
+
+<button
+    id="unlinkLine"
+    class="quick-button red"
+    style="
+        width:100%;
+        margin-top:12px;
+    "
+>
+解除 LINE 綁定
+</button>
+
+</div>
+
+</div>
+
+
+<div class="card">
+
+<button
+    id="logoutButton"
+    class="quick-button red"
+    style="width:100%;"
+>
+登出會員工作台
+</button>
+
+</div>
+
+</section>
+
+
+</div>
+
+</div>
+
+
+<!-- ==================================================
+BOTTOM NAV
+================================================== -->
+
+<nav
+    id="bottomNav"
+    class="bottom-nav hidden"
+>
+
+<div class="bottom-inner">
+
+<button
+    class="nav-button active"
+    data-page="home"
+>
+
+<span class="nav-icon">
+⌂
+</span>
+
+首頁
+
+</button>
+
+
+<button
+    class="nav-button"
+    data-page="share"
+>
+
+<span class="nav-icon">
+↗
+</span>
+
+分享
+
+</button>
+
+
+<button
+    class="nav-button"
+    data-page="customers"
+>
+
+<span class="nav-icon">
+♟
+</span>
+
+客戶
+
+</button>
+
+
+<button
+    class="nav-button"
+    data-page="followup"
+>
+
+<span
+    id="taskBadge"
+    class="nav-badge"
+>
+0
+</span>
+
+<span class="nav-icon">
+✓
+</span>
+
+待辦
+
+</button>
+
+
+<button
+    class="nav-button"
+    data-page="profile"
+>
+
+<span class="nav-icon">
+●
+</span>
+
+我的
+
+</button>
+
+</div>
+
+</nav>
+
+
+<script>
+
+/*
+========================================================
+請修改這三個設定
+========================================================
+*/
+
+const SUPABASE_URL =
+    "請貼上你的_PROJECT_URL";
+
+
+const SUPABASE_KEY =
+    "請貼上你的_sb_publishable_KEY";
+
+
+const LINE_ADD_URL =
+    "https://lin.ee/請換成你的LINE網址";
+
+
+/*
+========================================================
+SUPABASE
+========================================================
+*/
+
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/*
+========================================================
+STATE
+========================================================
+*/
+
+let authUser =
+    null;
+
+let member =
+    null;
+
+let events =
+    [];
+
+let leads =
+    [];
+
+let shareContents =
+    [];
+
+let todayContent =
+    null;
+
+let shareLogs =
+    [];
+
+let leadFilter =
+    "all";
+
+let taskFilter =
+    "today";
+
+let linePolling =
+    null;
+
+
+const STATUS_LABELS = {
+
+    line_clicked:
+        "待聯絡",
+
+    contacted:
+        "已聯絡",
+
+    booked:
+        "已預約",
+
+    experienced:
+        "已體驗",
+
+    joined:
+        "已加入",
+
+    closed_won:
+        "已成交",
+
+    closed_lost:
+        "未成交"
+
+};
+
+
+/*
+========================================================
+LOGIN
+========================================================
+*/
+
+document
+.getElementById(
+    "loginForm"
+)
+.addEventListener(
+
+    "submit",
+
+    async function(e) {
+
+        e.preventDefault();
+
+
+        const button =
+            document
+            .getElementById(
+                "loginButton"
+            );
+
+
+        const errorBox =
+            document
+            .getElementById(
+                "loginError"
+            );
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "登入中...";
+
+
+        errorBox.textContent =
+            "";
+
+
+        const {
+            data,
+            error
+        } =
+            await db.auth
+            .signInWithPassword({
+
+                email:
+                    document
+                    .getElementById(
+                        "loginEmail"
+                    )
+                    .value
+                    .trim(),
+
+                password:
+                    document
+                    .getElementById(
+                        "loginPassword"
+                    )
+                    .value
+
+            });
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "登入會員工作台";
+
+
+        if (
+            error ||
+            !data.user
+        ) {
+
+            errorBox.textContent =
+                "登入失敗，請確認 Email 或密碼。";
+
+            return;
+
+        }
+
+
+        await startApp();
+
+    }
+
+);
+
+
+/*
+========================================================
+CHECK SESSION
+========================================================
+*/
+
+async function checkSession() {
+
+    const {
+        data,
+        error
+    } =
+        await db.auth
+        .getUser();
+
+
+    if (
+        !error &&
+        data &&
+        data.user
+    ) {
+
+        await startApp();
+
+    }
+
+}
+
+
+/*
+========================================================
+START APP
+========================================================
+*/
+
+async function startApp() {
+
+    const {
+        data: userData,
+        error: userError
+    } =
+        await db.auth
+        .getUser();
+
+
+    if (
+        userError ||
+        !userData.user
+    ) {
+
+        return;
+
+    }
+
+
+    authUser =
+        userData.user;
+
+
+    const {
+        data: memberData,
+        error: memberError
+    } =
+        await db
+
+        .from(
+            "lvvip_members"
+        )
+
+        .select(
+            `
+            id,
+            ref_code,
+            display_name,
+            email,
+            active,
+            line_user_id,
+            line_linked_at,
+            line_notify_enabled
+            `
+        )
+
+        .eq(
+            "id",
+            authUser.id
+        )
+
+        .single();
+
+
+    if (
+        memberError ||
+        !memberData
+    ) {
+
+        await db.auth
+            .signOut();
+
+
+        document
+        .getElementById(
+            "loginError"
+        )
+        .textContent =
+            "此帳號尚未建立 L-VVIP 會員資料。";
+
+
+        return;
+
+    }
+
+
+    if (
+        !memberData.active
+    ) {
+
+        await db.auth
+            .signOut();
+
+
+        document
+        .getElementById(
+            "loginError"
+        )
+        .textContent =
+            "此會員帳號目前未啟用。";
+
+
+        return;
+
+    }
+
+
+    member =
+        memberData;
+
+
+    document
+    .getElementById(
+        "loginPage"
+    )
+    .classList
+    .add(
+        "hidden"
+    );
+
+
+    document
+    .getElementById(
+        "app"
+    )
+    .classList
+    .remove(
+        "hidden"
+    );
+
+
+    document
+    .getElementById(
+        "bottomNav"
+    )
+    .classList
+    .remove(
+        "hidden"
+    );
+
+
+    renderMemberHeader();
+
+
+    await loadAll();
+
+}
+
+
+/*
+========================================================
+LOAD ALL
+========================================================
+*/
+
+async function loadAll() {
+
+    showLoading(
+        true
+    );
+
+
+    try {
+
+        await Promise.all([
+
+            loadEvents(),
+
+            loadLeads(),
+
+            loadShareContents(),
+
+            loadShareLogs()
+
+        ]);
+
+
+        chooseTodayContent();
+
+
+        renderEverything();
+
+
+        showLoading(
+            false
+        );
+
+
+    } catch (
+        error
+    ) {
+
+        console.error(
+            error
+        );
+
+
+        document
+        .getElementById(
+            "globalLoading"
+        )
+        .textContent =
+            "資料讀取失敗，請重新整理或檢查 Supabase 權限。";
+
+    }
+
+}
+
+
+/*
+========================================================
+EVENTS
+========================================================
+*/
+
+async function loadEvents() {
+
+    const since =
+        new Date(
+            Date.now()
+            -
+            30 *
+            86400000
+        )
+        .toISOString();
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+
+        .from(
+            "lvvip_events"
+        )
+
+        .select(
+            `
+            created_at,
+            event,
+            visitor_id,
+            source,
+            ref,
+            utm_source,
+            utm_campaign
+            `
+        )
+
+        .eq(
+            "ref",
+            member.ref_code
+        )
+
+        .gte(
+            "created_at",
+            since
+        )
+
+        .order(
+            "created_at",
+            {
+                ascending:
+                    false
+            }
+        )
+
+        .range(
+            0,
+            4999
+        );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    events =
+        data || [];
+
+}
+
+
+/*
+========================================================
+LEADS
+========================================================
+*/
+
+async function loadLeads() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+
+        .from(
+            "lvvip_leads"
+        )
+
+        .select(
+            `
+            id,
+            visitor_id,
+            ref_code,
+            source,
+            status,
+            contact_name,
+            contact_note,
+            created_at,
+            updated_at,
+            last_follow_up_at,
+            next_follow_up_at,
+            appointment_at,
+            contacted_at,
+            booked_at,
+            experienced_at,
+            joined_at,
+            closed_won_at
+            `
+        )
+
+        .eq(
+            "ref_code",
+            member.ref_code
+        )
+
+        .order(
+            "created_at",
+            {
+                ascending:
+                    false
+            }
+        )
+
+        .range(
+            0,
+            4999
+        );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    leads =
+        data || [];
+
+}
+
+
+/*
+========================================================
+SHARE CONTENT
+========================================================
+*/
+
+async function loadShareContents() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+
+        .from(
+            "lvvip_share_contents"
+        )
+
+        .select(
+            `
+            id,
+            campaign_code,
+            rotation_day,
+            title,
+            hook,
+            body,
+            cta,
+            video_url,
+            active
+            `
+        )
+
+        .eq(
+            "active",
+            true
+        );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    shareContents =
+        data || [];
+
+}
+
+
+/*
+========================================================
+SHARE LOG
+========================================================
+*/
+
+async function loadShareLogs() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+
+        .from(
+            "lvvip_share_logs"
+        )
+
+        .select(
+            `
+            id,
+            platform,
+            shared_at
+            `
+        )
+
+        .eq(
+            "member_id",
+            member.id
+        )
+
+        .order(
+            "shared_at",
+            {
+                ascending:
+                    false
+            }
+        )
+
+        .range(
+            0,
+            4999
+        );
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    shareLogs =
+        data || [];
+
+}
+
+
+/*
+========================================================
+TODAY CONTENT
+========================================================
+*/
+
+function taipeiWeekday() {
+
+    const day =
+        new Intl.DateTimeFormat(
+            "en-US",
+            {
+
+                timeZone:
+                    "Asia/Taipei",
+
+                weekday:
+                    "short"
+
+            }
+        )
+        .format(
+            new Date()
+        );
+
+
+    return {
+
+        Sun: 0,
+        Mon: 1,
+        Tue: 2,
+        Wed: 3,
+        Thu: 4,
+        Fri: 5,
+        Sat: 6
+
+    }[day];
+
+}
+
+
+function chooseTodayContent() {
+
+    const day =
+        taipeiWeekday();
+
+
+    todayContent =
+        shareContents.find(
+            item =>
+                Number(
+                    item.rotation_day
+                )
+                ===
+                day
+        )
+
+        ||
+
+        shareContents[0]
+
+        ||
+
+        null;
+
+}
+
+
+/*
+========================================================
+RENDER ALL
+========================================================
+*/
+
+function renderEverything() {
+
+    renderHome();
+
+    renderShare();
+
+    renderCustomers();
+
+    renderFollowup();
+
+    renderProfile();
+
+    updateTaskBadge();
+
+}
+
+
+/*
+========================================================
+MEMBER HEADER
+========================================================
+*/
+
+function renderMemberHeader() {
+
+    document
+    .getElementById(
+        "memberHeader"
+    )
+    .textContent =
+
+        (
+            member.display_name
+            ||
+            "L-VVIP 會員"
+        )
+
+        +
+
+        " ｜ "
+
+        +
+
+        member.ref_code;
+
+}
+
+
+/*
+========================================================
+HOME
+========================================================
+*/
+
+function renderHome() {
+
+    const since7 =
+        Date.now()
+        -
+        7 *
+        86400000;
+
+
+    const pageViews =
+        events.filter(
+
+            row =>
+
+                row.event ===
+                    "page_view"
+
+                &&
+
+                new Date(
+                    row.created_at
+                )
+                .getTime()
+                >=
+                since7
+
+        )
+        .length;
+
+
+    const leadCount =
+        leads.filter(
+
+            row =>
+                new Date(
+                    row.created_at
+                )
+                .getTime()
+                >=
+                since7
+
+        )
+        .length;
+
+
+    const wins =
+        leads.filter(
+
+            row =>
+                Boolean(
+                    row.closed_won_at
+                )
+
+        )
+        .length;
+
+
+    const tasks =
+        getTodayTasks()
+        .length;
+
+
+    setText(
+        "homeViews",
+        pageViews
+    );
+
+
+    setText(
+        "homeLeads",
+        leadCount
+    );
+
+
+    setText(
+        "homeTasks",
+        tasks
+    );
+
+
+    setText(
+        "homeWins",
+        wins
+    );
+
+
+    const overdue =
+        leads.filter(
+            isOverdue
+        )
+        .length;
+
+
+    const appointments =
+        leads.filter(
+            isUpcomingAppointment
+        )
+        .length;
+
+
+    const box =
+        document
+        .getElementById(
+            "homeReminder"
+        );
+
+
+    box.innerHTML =
+        `
+
+        <div class="task-line">
+
+            <div>
+
+                <div class="task-title">
+                    今日要跟進
+                </div>
+
+                <div class="task-sub">
+                    安排在今天的跟進與預約
+                </div>
+
+            </div>
+
+            <div class="task-status gold">
+                ${tasks}
+            </div>
+
+        </div>
+
+
+        <div class="task-line">
+
+            <div>
+
+                <div class="task-title">
+                    已逾期
+                </div>
+
+                <div class="task-sub">
+                    已超過原訂跟進時間
+                </div>
+
+            </div>
+
+            <div class="task-status red">
+                ${overdue}
+            </div>
+
+        </div>
+
+
+        <div class="task-line">
+
+            <div>
+
+                <div class="task-title">
+                    7天內預約
+                </div>
+
+                <div class="task-sub">
+                    即將進行的預約與體驗
+                </div>
+
+            </div>
+
+            <div class="task-status green">
+                ${appointments}
+            </div>
+
+        </div>
+
+        `;
+
+}
+
+
+/*
+========================================================
+SHARE URL
+========================================================
+*/
+
+function createShareUrl(
+    platform = "share"
+) {
+
+    const url =
+        new URL(
+            "index.html",
+            window.location.href
+        );
+
+
+    url.search =
+        "";
+
+
+    url.searchParams.set(
+        "ref",
+        member.ref_code
+    );
+
+
+    url.searchParams.set(
+        "from",
+        platform
+    );
+
+
+    if (
+        todayContent
+        &&
+        todayContent.campaign_code
+    ) {
+
+        url.searchParams.set(
+            "utm_campaign",
+            todayContent.campaign_code
+        );
+
+    }
+
+
+    return url.toString();
+
+}
+
+
+/*
+========================================================
+SHARE TEXT
+========================================================
+*/
+
+function createShareText(
+    platform = "share"
+) {
+
+    if (!todayContent) {
+
+        return createShareUrl(
+            platform
+        );
+
+    }
+
+
+    return (
+
+        todayContent.hook
+
+        +
+
+        "\n\n"
+
+        +
+
+        todayContent.body
+
+        +
+
+        "\n\n"
+
+        +
+
+        todayContent.cta
+
+        +
+
+        "\n\n"
+
+        +
+
+        createShareUrl(
+            platform
+        )
+
+    );
+
+}
+
+
+/*
+========================================================
+RENDER SHARE
+========================================================
+*/
+
+function renderShare() {
+
+    if (!todayContent) {
+
+        document
+        .getElementById(
+            "shareTitle"
+        )
+        .textContent =
+            "今天尚未設定分享內容";
+
+
+        return;
+
+    }
+
+
+    document
+    .getElementById(
+        "shareDate"
+    )
+    .textContent =
+
+        new Intl.DateTimeFormat(
+            "zh-TW",
+            {
+
+                timeZone:
+                    "Asia/Taipei",
+
+                dateStyle:
+                    "full"
+
+            }
+        )
+        .format(
+            new Date()
+        );
+
+
+    document
+    .getElementById(
+        "shareTitle"
+    )
+    .textContent =
+        todayContent.title;
+
+
+    document
+    .getElementById(
+        "shareHook"
+    )
+    .textContent =
+        todayContent.hook;
+
+
+    document
+    .getElementById(
+        "shareBody"
+    )
+    .textContent =
+        todayContent.body;
+
+
+    document
+    .getElementById(
+        "shareCta"
+    )
+    .textContent =
+        todayContent.cta;
+
+
+    document
+    .getElementById(
+        "shareUrl"
+    )
+    .textContent =
+        createShareUrl();
+
+
+    const now =
+        Date.now();
+
+
+    const startToday =
+        new Date();
+
+
+    startToday.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    const todayCount =
+        shareLogs.filter(
+
+            row =>
+                new Date(
+                    row.shared_at
+                )
+                >=
+                startToday
+
+        )
+        .length;
+
+
+    const weekCount =
+        shareLogs.filter(
+
+            row =>
+
+                new Date(
+                    row.shared_at
+                )
+                .getTime()
+
+                >=
+
+                now
+                -
+                7 *
+                86400000
+
+        )
+        .length;
+
+
+    const views7 =
+        events.filter(
+
+            row =>
+
+                row.event ===
+                    "page_view"
+
+                &&
+
+                new Date(
+                    row.created_at
+                )
+                .getTime()
+
+                >=
+
+                now
+                -
+                7 *
+                86400000
+
+        )
+        .length;
+
+
+    setText(
+        "shareToday",
+        todayCount
+    );
+
+
+    setText(
+        "shareWeek",
+        weekCount
+    );
+
+
+    setText(
+        "shareAll",
+        shareLogs.length
+    );
+
+
+    setText(
+        "shareViews",
+        views7
+    );
+
+}
+
+
+/*
+========================================================
+LOG SHARE
+========================================================
+*/
+
+async function logShare(
+    platform
+) {
+
+    if (
+        !todayContent
+    ) {
+
+        return;
+
+    }
+
+
+    const {
+        error
+    } =
+        await db
+
+        .from(
+            "lvvip_share_logs"
+        )
+
+        .insert({
+
+            member_id:
+                member.id,
+
+            content_id:
+                todayContent.id,
+
+            platform:
+                platform
+
+        });
+
+
+    if (!error) {
+
+        shareLogs.unshift({
+
+            platform:
+                platform,
+
+            shared_at:
+                new Date()
+                .toISOString()
+
+        });
+
+
+        renderShare();
+
+    }
+
+}
+
+
+/*
+========================================================
+NATIVE SHARE
+========================================================
+*/
+
+document
+.getElementById(
+    "nativeShare"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        if (!todayContent) {
+            return;
+        }
+
+
+        if (
+            navigator.share
+        ) {
+
+            try {
+
+                await navigator.share({
+
+                    title:
+                        todayContent.title,
+
+                    text:
+
+                        todayContent.hook
+
+                        +
+
+                        "\n\n"
+
+                        +
+
+                        todayContent.cta,
+
+                    url:
+                        createShareUrl(
+                            "share"
+                        )
+
+                });
+
+
+                await logShare(
+                    "native"
+                );
+
+
+                return;
+
+
+            } catch (
+                error
+            ) {
+
+                if (
+                    error.name ===
+                    "AbortError"
+                ) {
+
+                    return;
+
+                }
+
+            }
+
+        }
+
+
+        await copyText(
+            createShareText(
+                "share"
+            )
+        );
+
+
+        await logShare(
+            "copy"
+        );
+
+
+        alert(
+            "完整分享文案已複製。"
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+LINE SHARE
+========================================================
+*/
+
+document
+.getElementById(
+    "lineShare"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        const text =
+            createShareText(
+                "line"
+            );
+
+
+        await logShare(
+            "line"
+        );
+
+
+        window.location.href =
+
+            "https://line.me/R/share?text="
+
+            +
+
+            encodeURIComponent(
+                text
+            );
+
+    }
+
+);
+
+
+/*
+========================================================
+COPY PLATFORM
+========================================================
+*/
+
+document
+.querySelectorAll(
+    "[data-copy-platform]"
+)
+.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            async function() {
+
+                const platform =
+                    button.dataset
+                    .copyPlatform;
+
+
+                await copyText(
+
+                    createShareText(
+                        platform
+                    )
+
+                );
+
+
+                await logShare(
+                    platform
+                );
+
+
+                const old =
+                    button.textContent;
+
+
+                button.textContent =
+                    "✓ 已複製";
+
+
+                setTimeout(
+
+                    () => {
+
+                        button.textContent =
+                            old;
+
+                    },
+
+                    1200
+
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+CUSTOMERS
+========================================================
+*/
+
+document
+.querySelectorAll(
+    "[data-lead-filter]"
+)
+.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            function() {
+
+                document
+                .querySelectorAll(
+                    "[data-lead-filter]"
+                )
+                .forEach(
+
+                    item =>
+                        item.classList
+                        .remove(
+                            "active"
+                        )
+
+                );
+
+
+                button.classList
+                    .add(
+                        "active"
+                    );
+
+
+                leadFilter =
+                    button.dataset
+                    .leadFilter;
+
+
+                renderCustomers();
+
+            }
+
+        );
+
+    }
+
+);
+
+
+function renderCustomers() {
+
+    const box =
+        document
+        .getElementById(
+            "customerList"
+        );
+
+
+    box.innerHTML =
+        "";
+
+
+    const list =
+        leads.filter(
+
+            row =>
+
+                leadFilter ===
+                    "all"
+
+                ||
+
+                row.status ===
+                    leadFilter
+
+        );
+
+
+    if (
+        list.length === 0
+    ) {
+
+        box.innerHTML =
+            `
+            <div class="empty">
+                目前沒有符合的客戶名單
+            </div>
+            `;
+
+
+        return;
+
+    }
+
+
+    list.forEach(
+
+        row => {
+
+            const card =
+                createLeadCard(
+                    row
+                );
+
+
+            box.appendChild(
+                card
+            );
+
+        }
+
+    );
+
+}
+
+
+/*
+========================================================
+CREATE LEAD CARD
+========================================================
+*/
+
+function createLeadCard(
+    row
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+
+    card.className =
+        "lead-card"
+        +
+        (
+            isOverdue(
+                row
+            )
+            ? " overdue"
+            : ""
+        );
+
+
+    card.dataset.id =
+        row.id;
+
+
+    const options =
+        Object.entries(
+            STATUS_LABELS
+        )
+
+        .map(
+
+            ([value,label]) =>
+
+                `
+                <option
+                    value="${value}"
+                    ${
+                        value ===
+                            row.status
+                        ? "selected"
+                        : ""
+                    }
+                >
+                    ${label}
+                </option>
+                `
+
+        )
+
+        .join(
+            ""
+        );
+
+
+    card.innerHTML =
+        `
+
+        <div class="lead-head">
+
+            <div>
+
+                <div class="lead-name">
+
+                    ${escapeHtml(
+                        row.contact_name
+                        ||
+                        "尚未填姓名"
+                    )}
+
+                </div>
+
+                <div class="lead-meta">
+
+                    ${escapeHtml(
+                        row.source
+                        ||
+                        "direct"
+                    )}
+
+                    ｜
+
+                    ${formatDate(
+                        row.created_at
+                    )}
+
+                </div>
+
+            </div>
+
+            <div
+                class="
+                    badge
+                    ${
+                        isOverdue(row)
+                        ? "red"
+                        : ""
+                    }
+                "
+            >
+
+                ${
+                    isOverdue(row)
+
+                    ? "已逾期"
+
+                    : escapeHtml(
+                        STATUS_LABELS[
+                            row.status
+                        ]
+                        ||
+                        row.status
+                    )
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="form-grid">
+
+
+            <div class="form-group">
+
+                <label>
+                    CRM 進度
+                </label>
+
+                <select class="lead-status">
+                    ${options}
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    姓名／稱呼
+                </label>
+
+                <input
+                    class="lead-name-input"
+                    value="${escapeAttr(
+                        row.contact_name
+                        ||
+                        ""
+                    )}"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    下次跟進
+                </label>
+
+                <input
+                    class="lead-follow"
+                    type="datetime-local"
+                    value="${toInputTime(
+                        row.next_follow_up_at
+                    )}"
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>
+                    預約／體驗
+                </label>
+
+                <input
+                    class="lead-appointment"
+                    type="datetime-local"
+                    value="${toInputTime(
+                        row.appointment_at
+                    )}"
+                >
+
+            </div>
+
+
+            <div
+                class="form-group full"
+            >
+
+                <label>
+                    備註
+                </label>
+
+                <textarea
+                    class="lead-note"
+                >${escapeHtml(
+                    row.contact_note
+                    ||
+                    ""
+                )}</textarea>
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="save-button"
+            data-save-lead
+        >
+            儲存客戶資料
+        </button>
+
+        `;
+
+
+    return card;
+
+}
+
+
+/*
+========================================================
+SAVE LEAD
+========================================================
+*/
+
+document
+.getElementById(
+    "customerList"
+)
+.addEventListener(
+
+    "click",
+
+    async function(event) {
+
+        const button =
+            event.target
+            .closest(
+                "[data-save-lead]"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const card =
+            button.closest(
+                ".lead-card"
+            );
+
+
+        await saveLeadCard(
+            card,
+            button
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+SAVE FUNCTION
+========================================================
+*/
+
+async function saveLeadCard(
+    card,
+    button
+) {
+
+    const id =
+        card.dataset.id;
+
+
+    const follow =
+        card
+        .querySelector(
+            ".lead-follow"
+        )
+        .value;
+
+
+    const appointment =
+        card
+        .querySelector(
+            ".lead-appointment"
+        )
+        .value;
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "儲存中...";
+
+
+    const {
+        data,
+        error
+    } =
+        await db.rpc(
+
+            "update_lvvip_followup",
+
+            {
+
+                p_lead_id:
+                    id,
+
+                p_status:
+                    card
+                    .querySelector(
+                        ".lead-status"
+                    )
+                    .value,
+
+                p_contact_name:
+                    card
+                    .querySelector(
+                        ".lead-name-input"
+                    )
+                    .value
+                    .trim(),
+
+                p_contact_note:
+                    card
+                    .querySelector(
+                        ".lead-note"
+                    )
+                    .value
+                    .trim(),
+
+                p_next_follow_up_at:
+
+                    follow
+
+                    ? new Date(
+                        follow
+                    )
+                    .toISOString()
+
+                    : null,
+
+                p_appointment_at:
+
+                    appointment
+
+                    ? new Date(
+                        appointment
+                    )
+                    .toISOString()
+
+                    : null
+
+            }
+
+        );
+
+
+    button.disabled =
+        false;
+
+
+    if (
+        error ||
+        !data?.ok
+    ) {
+
+        button.textContent =
+            "儲存客戶資料";
+
+
+        alert(
+            error?.message
+            ||
+            "儲存失敗"
+        );
+
+
+        return;
+
+    }
+
+
+    button.textContent =
+        "✓ 已儲存";
+
+
+    setTimeout(
+
+        () => {
+
+            button.textContent =
+                "儲存客戶資料";
+
+        },
+
+        1000
+
+    );
+
+
+    await loadLeads();
+
+
+    renderCustomers();
+
+    renderFollowup();
+
+    renderHome();
+
+    updateTaskBadge();
+
+}
+
+
+/*
+========================================================
+FOLLOWUP
+========================================================
+*/
+
+document
+.querySelectorAll(
+    "[data-task-filter]"
+)
+.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            function() {
+
+                document
+                .querySelectorAll(
+                    "[data-task-filter]"
+                )
+                .forEach(
+
+                    item =>
+                        item.classList
+                        .remove(
+                            "active"
+                        )
+
+                );
+
+
+                button.classList
+                    .add(
+                        "active"
+                    );
+
+
+                taskFilter =
+                    button.dataset
+                    .taskFilter;
+
+
+                renderFollowup();
+
+            }
+
+        );
+
+    }
+
+);
+
+
+function renderFollowup() {
+
+    const today =
+        getTodayTasks();
+
+
+    const overdue =
+        leads.filter(
+            isOverdue
+        );
+
+
+    const stale =
+        leads.filter(
+            isStale
+        );
+
+
+    const appointments =
+        leads.filter(
+            isUpcomingAppointment
+        );
+
+
+    setText(
+        "taskToday",
+        today.length
+    );
+
+
+    setText(
+        "taskOverdue",
+        overdue.length
+    );
+
+
+    setText(
+        "taskStale",
+        stale.length
+    );
+
+
+    setText(
+        "taskAppointment",
+        appointments.length
+    );
+
+
+    let list =
+        [];
+
+
+    if (
+        taskFilter ===
+        "today"
+    ) {
+
+        list =
+            today;
+
+    }
+
+
+    if (
+        taskFilter ===
+        "overdue"
+    ) {
+
+        list =
+            overdue;
+
+    }
+
+
+    if (
+        taskFilter ===
+        "stale"
+    ) {
+
+        list =
+            stale;
+
+    }
+
+
+    if (
+        taskFilter ===
+        "appointment"
+    ) {
+
+        list =
+            appointments;
+
+    }
+
+
+    if (
+        taskFilter ===
+        "all"
+    ) {
+
+        list =
+            leads.filter(
+
+                row =>
+                    ![
+                        "closed_won",
+                        "closed_lost"
+                    ]
+                    .includes(
+                        row.status
+                    )
+
+            );
+
+    }
+
+
+    const box =
+        document
+        .getElementById(
+            "taskList"
+        );
+
+
+    box.innerHTML =
+        "";
+
+
+    if (
+        list.length === 0
+    ) {
+
+        box.innerHTML =
+            `
+            <div class="empty">
+                目前沒有待辦
+            </div>
+            `;
+
+
+        return;
+
+    }
+
+
+    list.forEach(
+
+        row => {
+
+            const card =
+                createLeadCard(
+                    row
+                );
+
+
+            box.appendChild(
+                card
+            );
+
+        }
+
+    );
+
+}
+
+
+/*
+========================================================
+TASK SAVE
+========================================================
+*/
+
+document
+.getElementById(
+    "taskList"
+)
+.addEventListener(
+
+    "click",
+
+    async function(event) {
+
+        const button =
+            event.target
+            .closest(
+                "[data-save-lead]"
+            );
+
+
+        if (!button) {
+            return;
+        }
+
+
+        const card =
+            button.closest(
+                ".lead-card"
+            );
+
+
+        await saveLeadCard(
+            card,
+            button
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+TASK LOGIC
+========================================================
+*/
+
+function startToday() {
+
+    const date =
+        new Date();
+
+
+    date.setHours(
+        0,
+        0,
+        0,
+        0
+    );
+
+
+    return date;
+
+}
+
+
+function endToday() {
+
+    const date =
+        new Date();
+
+
+    date.setHours(
+        23,
+        59,
+        59,
+        999
+    );
+
+
+    return date;
+
+}
+
+
+function isTodayDate(
+    value
+) {
+
+    if (!value) {
+        return false;
+    }
+
+
+    const date =
+        new Date(
+            value
+        );
+
+
+    return (
+
+        date >=
+            startToday()
+
+        &&
+
+        date <=
+            endToday()
+
+    );
+
+}
+
+
+function getTodayTasks() {
+
+    return leads.filter(
+
+        row =>
+
+            ![
+                "closed_won",
+                "closed_lost"
+            ]
+            .includes(
+                row.status
+            )
+
+            &&
+
+            (
+                isTodayDate(
+                    row.next_follow_up_at
+                )
+
+                ||
+
+                isTodayDate(
+                    row.appointment_at
+                )
+            )
+
+    );
+
+}
+
+
+function isOverdue(
+    row
+) {
+
+    if (
+        [
+            "closed_won",
+            "closed_lost"
+        ]
+        .includes(
+            row.status
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        !row.next_follow_up_at
+    ) {
+
+        return false;
+
+    }
+
+
+    return (
+
+        new Date(
+            row.next_follow_up_at
+        )
+
+        <
+
+        new Date()
+
+    );
+
+}
+
+
+function isStale(
+    row
+) {
+
+    if (
+        [
+            "closed_won",
+            "closed_lost"
+        ]
+        .includes(
+            row.status
+        )
+    ) {
+
+        return false;
+
+    }
+
+
+    if (
+        row.next_follow_up_at
+
+        &&
+
+        new Date(
+            row.next_follow_up_at
+        )
+        >
+        new Date()
+    ) {
+
+        return false;
+
+    }
+
+
+    const base =
+        row.last_follow_up_at
+        ||
+        row.created_at;
+
+
+    if (!base) {
+        return false;
+    }
+
+
+    return (
+
+        Date.now()
+
+        -
+
+        new Date(
+            base
+        )
+        .getTime()
+
+        >=
+
+        3 *
+        86400000
+
+    );
+
+}
+
+
+function isUpcomingAppointment(
+    row
+) {
+
+    if (
+        !row.appointment_at
+    ) {
+
+        return false;
+
+    }
+
+
+    const appointment =
+        new Date(
+            row.appointment_at
+        );
+
+
+    const now =
+        new Date();
+
+
+    const end =
+        new Date(
+            Date.now()
+            +
+            7 *
+            86400000
+        );
+
+
+    return (
+
+        appointment >= now
+
+        &&
+
+        appointment <= end
+
+    );
+
+}
+
+
+/*
+========================================================
+PROFILE
+========================================================
+*/
+
+function renderProfile() {
+
+    document
+    .getElementById(
+        "profileName"
+    )
+    .textContent =
+        member.display_name
+        ||
+        "L-VVIP 會員";
+
+
+    document
+    .getElementById(
+        "profileRef"
+    )
+    .textContent =
+        member.ref_code;
+
+
+    document
+    .getElementById(
+        "profileEmail"
+    )
+    .textContent =
+        member.email
+        ||
+        authUser.email
+        ||
+        "-";
+
+
+    document
+    .getElementById(
+        "profileUrl"
+    )
+    .textContent =
+        createBasicShareUrl();
+
+
+    document
+    .getElementById(
+        "lineAddLink"
+    )
+    .href =
+        LINE_ADD_URL;
+
+
+    renderLineStatus();
+
+}
+
+
+/*
+========================================================
+BASIC URL
+========================================================
+*/
+
+function createBasicShareUrl() {
+
+    const url =
+        new URL(
+            "index.html",
+            window.location.href
+        );
+
+
+    url.search =
+        "";
+
+
+    url.searchParams.set(
+        "ref",
+        member.ref_code
+    );
+
+
+    return url.toString();
+
+}
+
+
+/*
+========================================================
+COPY PROFILE URL
+========================================================
+*/
+
+document
+.getElementById(
+    "copyProfileUrl"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        await copyText(
+            createBasicShareUrl()
+        );
+
+
+        const old =
+            this.textContent;
+
+
+        this.textContent =
+            "✓ 已複製";
+
+
+        setTimeout(
+
+            () => {
+
+                this.textContent =
+                    old;
+
+            },
+
+            1200
+
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+LINE STATUS
+========================================================
+*/
+
+function renderLineStatus() {
+
+    const connected =
+        Boolean(
+            member.line_user_id
+        );
+
+
+    const status =
+        document
+        .getElementById(
+            "lineStatus"
+        );
+
+
+    if (connected) {
+
+        status.textContent =
+            "已綁定";
+
+
+        status.className =
+            "profile-value line-connected";
+
+
+        document
+        .getElementById(
+            "lineBindPanel"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+
+        document
+        .getElementById(
+            "lineLinkedPanel"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+    } else {
+
+        status.textContent =
+            "尚未綁定";
+
+
+        status.className =
+            "profile-value line-off";
+
+
+        document
+        .getElementById(
+            "lineBindPanel"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+        document
+        .getElementById(
+            "lineLinkedPanel"
+        )
+        .classList
+        .add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+/*
+========================================================
+GENERATE LINE CODE
+========================================================
+*/
+
+document
+.getElementById(
+    "generateBindCode"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        const button =
+            this;
+
+
+        button.disabled =
+            true;
+
+
+        button.textContent =
+            "產生中...";
+
+
+        const {
+            data,
+            error
+        } =
+            await db.functions
+            .invoke(
+
+                "line-bind-code",
+
+                {
+
+                    body: {
+
+                        action:
+                            "create"
+
+                    }
+
+                }
+
+            );
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "重新產生 LINE 綁定碼";
+
+
+        if (
+            error ||
+            !data?.ok
+        ) {
+
+            alert(
+                data?.error
+                ||
+                "綁定碼產生失敗"
+            );
+
+
+            return;
+
+        }
+
+
+        document
+        .getElementById(
+            "bindCode"
+        )
+        .textContent =
+            data.code;
+
+
+        document
+        .getElementById(
+            "bindCodePanel"
+        )
+        .classList
+        .remove(
+            "hidden"
+        );
+
+
+        startLinePolling();
+
+    }
+
+);
+
+
+/*
+========================================================
+COPY LINE CODE
+========================================================
+*/
+
+document
+.getElementById(
+    "copyBindCode"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        const code =
+            document
+            .getElementById(
+                "bindCode"
+            )
+            .textContent;
+
+
+        await copyText(
+            code
+        );
+
+
+        this.textContent =
+            "✓ 已複製";
+
+
+        setTimeout(
+
+            () => {
+
+                this.textContent =
+                    "複製綁定碼";
+
+            },
+
+            1200
+
+        );
+
+    }
+
+);
+
+
+/*
+========================================================
+POLL LINE
+========================================================
+*/
+
+function startLinePolling() {
+
+    if (
+        linePolling
+    ) {
+
+        clearInterval(
+            linePolling
+        );
+
+    }
+
+
+    linePolling =
+        setInterval(
+
+            async function() {
+
+                const {
+                    data,
+                    error
+                } =
+                    await db
+
+                    .from(
+                        "lvvip_members"
+                    )
+
+                    .select(
+                        `
+                        line_user_id,
+                        line_linked_at,
+                        line_notify_enabled
+                        `
+                    )
+
+                    .eq(
+                        "id",
+                        member.id
+                    )
+
+                    .single();
+
+
+                if (
+                    !error &&
+                    data &&
+                    data.line_user_id
+                ) {
+
+                    clearInterval(
+                        linePolling
+                    );
+
+
+                    linePolling =
+                        null;
+
+
+                    member.line_user_id =
+                        data.line_user_id;
+
+
+                    member.line_linked_at =
+                        data.line_linked_at;
+
+
+                    member.line_notify_enabled =
+                        data.line_notify_enabled;
+
+
+                    renderLineStatus();
+
+
+                    alert(
+                        "LINE 綁定成功！"
+                    );
+
+                }
+
+            },
+
+            3000
+
+        );
+
+}
+
+
+/*
+========================================================
+UNLINK LINE
+========================================================
+*/
+
+document
+.getElementById(
+    "unlinkLine"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        if (
+            !confirm(
+                "確定解除 LINE 綁定？"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await db.functions
+            .invoke(
+
+                "line-bind-code",
+
+                {
+
+                    body: {
+
+                        action:
+                            "unlink"
+
+                    }
+
+                }
+
+            );
+
+
+        if (
+            error ||
+            !data?.ok
+        ) {
+
+            alert(
+                "解除失敗"
+            );
+
+
+            return;
+
+        }
+
+
+        member.line_user_id =
+            null;
+
+
+        member.line_linked_at =
+            null;
+
+
+        renderLineStatus();
+
+    }
+
+);
+
+
+/*
+========================================================
+NAVIGATION
+========================================================
+*/
+
+const PAGE_TITLES = {
+
+    home:
+        "會員首頁",
+
+    share:
+        "每日分享",
+
+    customers:
+        "客戶管理",
+
+    followup:
+        "今日待辦",
+
+    profile:
+        "我的"
+
+};
+
+
+document
+.querySelectorAll(
+    ".nav-button"
+)
+.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            function() {
+
+                switchPage(
+                    button.dataset.page
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+
+document
+.querySelectorAll(
+    "[data-go]"
+)
+.forEach(
+
+    button => {
+
+        button.addEventListener(
+
+            "click",
+
+            function() {
+
+                switchPage(
+                    button.dataset.go
+                );
+
+            }
+
+        );
+
+    }
+
+);
+
+
+function switchPage(
+    page
+) {
+
+    document
+    .querySelectorAll(
+        ".page"
+    )
+    .forEach(
+
+        item =>
+            item.classList
+            .remove(
+                "active"
+            )
+
+    );
+
+
+    document
+    .querySelectorAll(
+        ".nav-button"
+    )
+    .forEach(
+
+        item =>
+            item.classList
+            .remove(
+                "active"
+            )
+
+    );
+
+
+    document
+    .getElementById(
+        "page-" + page
+    )
+    .classList
+    .add(
+        "active"
+    );
+
+
+    const nav =
+        document
+        .querySelector(
+            `.nav-button[data-page="${page}"]`
+        );
+
+
+    if (nav) {
+
+        nav.classList
+            .add(
+                "active"
+            );
+
+    }
+
+
+    document
+    .getElementById(
+        "pageTitle"
+    )
+    .textContent =
+        PAGE_TITLES[
+            page
+        ]
+        ||
+        "L-VVIP";
+
+
+    window.scrollTo(
+        {
+            top: 0,
+            behavior: "smooth"
+        }
+    );
+
+}
+
+
+/*
+========================================================
+TASK BADGE
+========================================================
+*/
+
+function updateTaskBadge() {
+
+    const count =
+        getTodayTasks()
+        .length
+
+        +
+
+        leads.filter(
+            isOverdue
+        )
+        .length;
+
+
+    const badge =
+        document
+        .getElementById(
+            "taskBadge"
+        );
+
+
+    if (
+        count > 0
+    ) {
+
+        badge.style.display =
+            "block";
+
+
+        badge.textContent =
+
+            count > 99
+
+            ? "99+"
+
+            : count;
+
+    } else {
+
+        badge.style.display =
+            "none";
+
+    }
+
+}
+
+
+/*
+========================================================
+REFRESH
+========================================================
+*/
+
+document
+.getElementById(
+    "refreshButton"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        this.disabled =
+            true;
+
+
+        this.textContent =
+            "更新中";
+
+
+        await loadAll();
+
+
+        this.disabled =
+            false;
+
+
+        this.textContent =
+            "重新整理";
+
+    }
+
+);
+
+
+/*
+========================================================
+LOGOUT
+========================================================
+*/
+
+document
+.getElementById(
+    "logoutButton"
+)
+.addEventListener(
+
+    "click",
+
+    async function() {
+
+        await db.auth
+            .signOut();
+
+
+        location.reload();
+
+    }
+
+);
+
+
+/*
+========================================================
+HELPERS
+========================================================
+*/
+
+function showLoading(
+    loading
+) {
+
+    document
+    .getElementById(
+        "globalLoading"
+    )
+    .classList
+    .toggle(
+        "hidden",
+        !loading
+    );
+
+
+    document
+    .getElementById(
+        "appContent"
+    )
+    .classList
+    .toggle(
+        "hidden",
+        loading
+    );
+
+}
+
+
+function setText(
+    id,
+    value
+) {
+
+    document
+    .getElementById(
+        id
+    )
+    .textContent =
+
+        Number(
+            value || 0
+        )
+        .toLocaleString(
+            "zh-TW"
+        );
+
+}
+
+
+function pad(
+    number
+) {
+
+    return String(
+        number
+    )
+    .padStart(
+        2,
+        "0"
+    );
+
+}
+
+
+function dateToInput(
+    date
+) {
+
+    return (
+
+        date.getFullYear()
+
+        +
+
+        "-"
+
+        +
+
+        pad(
+            date.getMonth()
+            +
+            1
+        )
+
+        +
+
+        "-"
+
+        +
+
+        pad(
+            date.getDate()
+        )
+
+        +
+
+        "T"
+
+        +
+
+        pad(
+            date.getHours()
+        )
+
+        +
+
+        ":"
+
+        +
+
+        pad(
+            date.getMinutes()
+        )
+
+    );
+
+}
+
+
+function toInputTime(
+    value
+) {
+
+    if (!value) {
+
+        return "";
+
+    }
+
+
+    return dateToInput(
+
+        new Date(
+            value
+        )
+
+    );
+
+}
+
+
+function formatDate(
+    value
+) {
+
+    if (!value) {
+
+        return "-";
+
+    }
+
+
+    return new Date(
+        value
+    )
+    .toLocaleString(
+        "zh-TW",
+        {
+            hour12:
+                false
+        }
+    );
+
+}
+
+
+async function copyText(
+    text
+) {
+
+    try {
+
+        await navigator
+        .clipboard
+        .writeText(
+            text
+        );
+
+
+    } catch {
+
+        const textarea =
+            document.createElement(
+                "textarea"
+            );
+
+
+        textarea.value =
+            text;
+
+
+        document.body
+        .appendChild(
+            textarea
+        );
+
+
+        textarea.select();
+
+
+        document.execCommand(
+            "copy"
+        );
+
+
+        textarea.remove();
+
+    }
+
+}
+
+
+function escapeHtml(
+    value
+) {
+
+    return String(
+        value ?? ""
+    )
+
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+
+    .replace(
+        /</g,
+        "&lt;"
+    )
+
+    .replace(
+        />/g,
+        "&gt;"
+    )
+
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+function escapeAttr(
+    value
+) {
+
+    return escapeHtml(
+        value
+    );
+
+}
+
+
+/*
+========================================================
+START
+========================================================
+*/
+
+checkSession();
+
+</script>
+
+</body>
+
+</html>
