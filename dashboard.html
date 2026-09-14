@@ -9,6 +9,112 @@
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:linear-gradient(180deg,#06111f,#0a1a29);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","Microsoft JhengHei",sans-serif}button,input{font:inherit}.hidden{display:none!important}.shell{width:min(100%,1100px);margin:auto;padding:18px 14px 40px}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.brand{color:#f1cf72;font-weight:900}.title{font-size:28px;font-weight:900}.sub,.note{color:#93a3af;font-size:13px;line-height:1.7}.btn{border:1px solid #3d566a;background:#10283a;color:#fff;border-radius:10px;padding:10px 13px;font-weight:800}.btn.red{background:#74383c;border:0}.panel{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:18px;margin-bottom:14px}.login-wrap{min-height:100vh;display:grid;place-items:center;padding:22px}.login-card{width:min(100%,430px);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:28px}.login-logo{color:#f1cf72;font-size:30px;font-weight:900}.login-title{font-size:24px;font-weight:900;margin:6px 0}.login-sub{color:#9eacb9;line-height:1.7;margin-bottom:18px}.field{margin-bottom:13px}.field label{display:block;color:#bdc7cf;margin-bottom:6px}.field input{width:100%;padding:13px;border-radius:10px;border:1px solid #31495d;background:#071724;color:#fff}.primary{width:100%;border:0;border-radius:11px;padding:14px;background:linear-gradient(90deg,#edc75d,#ffe79a);color:#13202a;font-weight:900}.login-error,.error-box{color:#ffaaaa;line-height:1.6;margin-top:10px}.filters{display:flex;gap:8px;overflow-x:auto}.filter{border:0;border-radius:999px;padding:9px 13px;background:#122b3e;color:#d4dde4;white-space:nowrap;font-weight:800}.filter.active{background:#f1cf72;color:#13202a}.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.kpi{padding:16px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.kpi-label{color:#96a7b4;font-size:12px}.kpi-num{font-size:29px;font-weight:900}.kpi-small{font-size:12px;color:#e7ce7c}.section-title{font-size:19px;font-weight:900;margin-bottom:12px}.grid2{display:grid;grid-template-columns:1fr;gap:14px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:680px}th,td{padding:11px 10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;font-size:13px}th{color:#f1cf72}.muted{color:#8fa0ad}.good{color:#70e19e}.warn{color:#f1cf72}.bad{color:#ff9a9a}.rank{font-weight:900;color:#f1cf72}.funnel{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.funnel-item{padding:14px;border-radius:13px;background:#0e2637}.funnel-label{color:#9eacb8;font-size:12px}.funnel-num{font-size:24px;font-weight:900}.loading{text-align:center;color:#91a2af;padding:40px}@media(min-width:760px){.kpis{grid-template-columns:repeat(6,1fr)}.grid2{grid-template-columns:1fr 1fr}.funnel{grid-template-columns:repeat(6,1fr)}}
 </style>
+  <style>
+/* L-VVIP 總管理儀表板｜手機版修正 */
+
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.shell {
+    width: 100%;
+    max-width: 1100px;
+    min-width: 0;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.topbar,
+.kpis,
+.grid2,
+.panel,
+.table-wrap,
+.funnel {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.grid2 > *,
+.kpis > *,
+.funnel > * {
+    min-width: 0;
+}
+
+.table-wrap {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.table-wrap table {
+    width: max-content;
+    min-width: 100%;
+    max-width: none;
+}
+
+@media (max-width: 759px) {
+
+    .shell {
+        width: 100%;
+        max-width: 100%;
+        padding: 14px 12px 32px;
+    }
+
+    .topbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 12px;
+        align-items: stretch;
+    }
+
+    .topbar > div {
+        min-width: 0;
+    }
+
+    .topbar > div:last-child {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .topbar > div:last-child .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    .title {
+        font-size: 26px;
+        line-height: 1.2;
+    }
+
+    .panel {
+        width: 100%;
+        min-width: 0;
+        padding: 14px;
+    }
+
+    .kpis {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .funnel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .filters {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+}
+</style>
 </head>
 <body>
 <div id="loginPage" class="login-wrap"><div class="login-card"><div class="login-logo">L-VVIP</div><div class="login-title">總管理儀表板</div><div class="login-sub">僅限 L-VVIP 管理員登入。請使用已設定為管理員的 Supabase 帳號。</div><form id="loginForm"><div class="field"><label>Email</label><input id="loginEmail" type="email" autocomplete="username" required></div><div class="field"><label>密碼</label><input id="loginPassword" type="password" autocomplete="current-password" required></div><button id="loginButton" class="primary" type="submit">登入總管理後台</button><div id="loginError" class="login-error"></div></form></div></div>
