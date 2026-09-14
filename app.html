@@ -5150,16 +5150,16 @@ TASK BADGE
 
 function updateTaskBadge() {
 
-    const count =
-        getTodayTasks()
-        .length
+    const uniqueTasks = [
+    ...getTodayTasks(),
+    ...leads.filter(isOverdue)
+];
 
-        +
-
-        leads.filter(
-            isOverdue
-        )
-        .length;
+const count = new Set(
+    uniqueTasks
+        .map(row => row.id)
+        .filter(Boolean)
+).size;
 
 
     const badge =
