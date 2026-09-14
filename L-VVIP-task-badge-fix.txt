@@ -1,0 +1,53 @@
+function updateTaskBadge() {
+
+    const uniqueTasks =
+        [
+            ...getTodayTasks(),
+            ...leads.filter(
+                isOverdue
+            )
+        ];
+
+    const count =
+        new Set(
+            uniqueTasks
+            .map(
+                row => row.id
+            )
+            .filter(
+                Boolean
+            )
+        )
+        .size;
+
+    const badge =
+        document
+        .getElementById(
+            "taskBadge"
+        );
+
+    if (!badge) {
+        return;
+    }
+
+    if (
+        count > 0
+    ) {
+
+        badge.style.display =
+            "block";
+
+        badge.textContent =
+            count > 99
+            ? "99+"
+            : String(count);
+
+    } else {
+
+        badge.style.display =
+            "none";
+
+        badge.textContent =
+            "0";
+    }
+}
